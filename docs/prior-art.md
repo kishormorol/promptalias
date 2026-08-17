@@ -26,7 +26,7 @@ three tools read it. That single fact is what removed most of the need for a too
 | --- | --- | --- |
 | **Claude Code** | `.claude/commands/*.md`, `$ARGUMENTS` and `$1`–`$9` | Commands were unified into skills. `.claude/skills/<name>/SKILL.md` is the recommended path. Old command files still work. |
 | **Codex** | `~/.codex/prompts/*.md` (or `$CODEX_HOME/prompts/`), invoked `/prompts:name` | Officially **deprecated** in favour of skills, and there are open reports of prompts not loading at all in recent CLI builds. Global scope only — no project scope. |
-| **Cursor** | `.cursor/commands/*.md`, `$1`/`$2` args | Commands still work. They take **no frontmatter** — so there is nowhere for a `description` to go. Skills live in `.cursor/skills/`. Ships a `/migrate-to-skills` command. |
+| **Cursor** | `.cursor/commands/*.md`, `$1`/`$2` args | Commands still work. They take **no frontmatter** — so there is nowhere for a `description` to go. Project skills live in `.cursor/skills/`; the *global* directory is `~/.cursor/skills-cursor/`, not `~/.cursor/skills/`, which does not exist. Ships a `/migrate-to-skills` command. |
 
 Three corrections this forced on the original brief:
 
