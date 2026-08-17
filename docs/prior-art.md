@@ -136,6 +136,15 @@ Build the compiler if any of these become true:
   translation problem that `npx skills` currently makes moot.
 - **Reach.** You want the same triggers outside coding agents — Slack, email, docs. That
   is Espanso's job, and a different tool, not this one.
+- **Your own vocabulary.** *(Added 17 Aug 2026 — a trigger this list originally missed.)*
+  You want your own keywords and sentences to select a prompt, rather than typing the
+  trigger or hoping the `description` matches. This is the one case Part 3 rules out by
+  assumption: it concluded the Resolver was vestigial *because* a `SKILL.md` compiler
+  never sees the input string. A design that intercepts input revives it. In Claude Code
+  that is the `UserPromptSubmit` hook; Codex and Cursor expose no equivalent, so anything
+  built here is single-tool and forfeits the cross-tool property that killed the
+  compiler in the first place. Try richer `Use when` clauses before writing the hook —
+  they cost nothing and work in all three tools.
 
 Until then: one folder per prompt, installed with `npx skills add . --global --all`.
 
