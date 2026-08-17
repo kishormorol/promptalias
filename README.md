@@ -20,37 +20,55 @@ npx skills add . --global --all   # install every skill for every agent
 npx skills list -g                # show what's installed where
 ```
 
-**Re-run `add` after every edit.** `npx skills add` *copies* each `SKILL.md` into a
-canonical hub at `~/.agents/skills/<name>/`, then symlinks agent directories at that hub —
-it does not link back to this repo. Verified by editing a file here and confirming the hub
-did not change. So this repo is the source of truth for *you*, not for the agents, and
-there is a sync step after all:
+Two caveats worth knowing, both measured rather than assumed.
 
-```sh
-cd ~/my-prompts && npx skills add . --global --all
-```
+**`add` copies; it does not link back here.** It writes each `SKILL.md` into a hub at
+`~/.agents/skills/<name>/` and symlinks agent directories at *the hub*. Edits to this repo
+are therefore invisible until you re-run `add`. Confirmed by editing `u/SKILL.md` and
+watching the hub not change.
 
-If you'd rather have true live editing, replace the hub copies with links to this repo:
+**`add` did not reach Codex or Cursor.** It reported success for both while writing only to
+the hub, leaving `~/.codex/skills/` empty and `~/.cursor/skills-cursor/` untouched.
+
+The fix for both is one chain of symlinks — point the hub at this repo, then point each
+tool at the hub:
 
 ```sh
 rm -rf ~/.agents/skills/u ~/.agents/skills/rv
 ln -s ~/my-prompts/u  ~/.agents/skills/u
 ln -s ~/my-prompts/rv ~/.agents/skills/rv
+
+mkdir -p ~/.codex/skills ~/.cursor/skills-cursor
+for s in u rv; do
+  ln -sfn ~/.agents/skills/$s ~/.codex/skills/$s
+  ln -sfn ~/.agents/skills/$s ~/.cursor/skills-cursor/$s
+done
 ```
 
-That makes edits here instant everywhere, at the cost of `npx skills` no longer managing
-these two entries — a future `add` or `update` may overwrite the links.
+### Current state on this machine
 
-### Where things actually landed
+All three resolve to this repo, and edits are live with no sync step:
 
-| Tool | Status |
-| --- | --- |
-| Claude Code | ✅ Verified — `~/.claude/skills/{u,rv}` → `~/.agents/skills/{u,rv}` |
-| Codex | ⚠️ `~/.codex/skills/` is empty. The installer classes Codex as a "universal" agent that reads `~/.agents/skills` directly — not verified from here. |
-| Cursor | ⚠️ Same. Nothing in `~/.cursor/skills-cursor/`, which is where Cursor keeps its own skills. Installer reports success writing only to the hub. |
+| Tool | Path | Resolves to |
+| --- | --- | --- |
+| Claude Code | `~/.claude/skills/u` | `~/my-prompts/u` ✅ |
+| Codex | `~/.codex/skills/u` | `~/my-prompts/u` ✅ |
+| Cursor | `~/.cursor/skills-cursor/u` | `~/my-prompts/u` ✅ |
 
-If `/u` doesn't resolve in Codex or Cursor, that's the reason — symlink the hub entry into
-that tool's own skills directory by hand.
+The tradeoff: `npx skills` no longer manages these entries, so a future `add` or `update`
+may replace the links with copies again. If `/u` stops picking up your edits, that's what
+happened — re-run the block above.
+
+### On another machine
+
+Now that this repo is public, install from GitHub instead of a local path:
+
+```sh
+npx skills add kishormorol/my-prompts --global --all
+```
+
+That also sets `Source:` to the repo rather than `local`, which is what makes
+`npx skills update` able to pull anything.
 
 ## Prompts
 
