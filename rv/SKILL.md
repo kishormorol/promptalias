@@ -1,6 +1,6 @@
 ---
 name: rv
-description: Review the most recent diff for correctness, security, and performance. Use when the user asks for a review of what just changed — "review this", "review the last diff", "check my changes", "look over what you just wrote", "anything wrong with this?".
+description: Review the most recent diff for correctness, security, and performance. Use when the user asks for a review of what just changed — "review this", "review the last diff", "check my changes", "look over what you just wrote", "anything wrong with this?", "does this look right", "sanity check this", "did I break anything", "go over the diff", "spot anything", "second pass on this", "any bugs here", "is this safe". Use it for any request to inspect recent work rather than change it.
 ---
 
 # Review the last diff

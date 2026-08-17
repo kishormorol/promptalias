@@ -1,6 +1,6 @@
 ---
 name: u
-description: Update an existing feature while keeping its tests green. Use when the user asks to change, extend, modify, or adjust behaviour that already exists and already has tests — phrasings like "update the X", "make X also do Y", "change how X works".
+description: Update an existing feature while keeping its tests green. Use when the user asks to change, extend, modify, or adjust behaviour that already exists and already has tests — phrasings like "update the X", "make X also do Y", "change how X works", "add Y to X", "tweak X", "X should also handle Y", "make X do Y instead", "extend X to cover Y", "adjust X so that Y", "rework X", "X needs to also do Y", "can you make X do Y", "while keeping the tests green". Use it for any request to alter code that already works, rather than to write something new.
 ---
 
 # Update a feature
