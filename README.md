@@ -2,8 +2,8 @@
 
 Reusable prompts, written once as [Agent Skills](https://skills.sh) and shared across
 Claude Code, Codex, and Cursor. There is deliberately **no build step and no CLI here** —
-each prompt is a folder with a `SKILL.md`, and `npx skills` symlinks them into every
-agent's skills directory, so editing a file here is live in all three tools immediately.
+each prompt is a folder with a `SKILL.md`, and `npx skills` distributes them to every
+agent's skills directory.
 
 This is not a text expander and not a config-sync tool. [Espanso](https://espanso.org)
 expands triggers into text system-wide in any app, and knows nothing about agent command
@@ -16,10 +16,41 @@ that led here, including the CLI that got designed and then killed.
 ## Install
 
 ```sh
-npx skills add ./my-prompts   # symlinks every skill into each agent's directory
-npx skills list               # show what's installed where
-npx skills update             # pull upstream changes
+npx skills add . --global --all   # install every skill for every agent
+npx skills list -g                # show what's installed where
 ```
+
+**Re-run `add` after every edit.** `npx skills add` *copies* each `SKILL.md` into a
+canonical hub at `~/.agents/skills/<name>/`, then symlinks agent directories at that hub —
+it does not link back to this repo. Verified by editing a file here and confirming the hub
+did not change. So this repo is the source of truth for *you*, not for the agents, and
+there is a sync step after all:
+
+```sh
+cd ~/my-prompts && npx skills add . --global --all
+```
+
+If you'd rather have true live editing, replace the hub copies with links to this repo:
+
+```sh
+rm -rf ~/.agents/skills/u ~/.agents/skills/rv
+ln -s ~/my-prompts/u  ~/.agents/skills/u
+ln -s ~/my-prompts/rv ~/.agents/skills/rv
+```
+
+That makes edits here instant everywhere, at the cost of `npx skills` no longer managing
+these two entries — a future `add` or `update` may overwrite the links.
+
+### Where things actually landed
+
+| Tool | Status |
+| --- | --- |
+| Claude Code | ✅ Verified — `~/.claude/skills/{u,rv}` → `~/.agents/skills/{u,rv}` |
+| Codex | ⚠️ `~/.codex/skills/` is empty. The installer classes Codex as a "universal" agent that reads `~/.agents/skills` directly — not verified from here. |
+| Cursor | ⚠️ Same. Nothing in `~/.cursor/skills-cursor/`, which is where Cursor keeps its own skills. Installer reports success writing only to the hub. |
+
+If `/u` doesn't resolve in Codex or Cursor, that's the reason — symlink the hub entry into
+that tool's own skills directory by hand.
 
 ## Prompts
 
