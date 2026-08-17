@@ -1,9 +1,14 @@
-# my-prompts
+# promptalias
 
 Reusable prompts, written once as [Agent Skills](https://skills.sh) and shared across
-Claude Code, Codex, and Cursor. There is deliberately **no build step and no CLI here** —
-each prompt is a folder with a `SKILL.md`, and `npx skills` distributes them to every
-agent's skills directory.
+Claude Code, Codex, and Cursor. Each prompt is a folder with a `SKILL.md`, and
+`npx skills` distributes them to every agent's skills directory.
+
+> **There is no `promptalias` command.** The name comes from a CLI that was designed and
+> then killed before implementation — a compiler from one terse YAML file into per-tool
+> command files. It turned out the three tools had converged on a single format, so there
+> was nothing left to compile. The name stuck; the compiler never happened. The full
+> reasoning, with links, is in [`docs/prior-art.md`](docs/prior-art.md).
 
 This is not a text expander and not a config-sync tool. [Espanso](https://espanso.org)
 expands triggers into text system-wide in any app, and knows nothing about agent command
@@ -11,7 +16,7 @@ formats. [rulesync](https://github.com/dyoshikawa/rulesync), `vsync`, and
 `agent-skill-porter` compile or convert configs *between* tools' directories. This repo
 skips that whole category: the three tools already read the same `SKILL.md` format, so
 there is nothing to compile. See [`docs/prior-art.md`](docs/prior-art.md) for the research
-that led here, including the CLI that got designed and then killed.
+that led here, including the two research passes that killed the CLI.
 
 ## Install
 
@@ -35,8 +40,8 @@ tool at the hub:
 
 ```sh
 rm -rf ~/.agents/skills/u ~/.agents/skills/rv
-ln -s ~/my-prompts/u  ~/.agents/skills/u
-ln -s ~/my-prompts/rv ~/.agents/skills/rv
+ln -s ~/promptalias/u  ~/.agents/skills/u
+ln -s ~/promptalias/rv ~/.agents/skills/rv
 
 mkdir -p ~/.codex/skills ~/.cursor/skills-cursor
 for s in u rv; do
@@ -51,9 +56,9 @@ All three resolve to this repo, and edits are live with no sync step:
 
 | Tool | Path | Resolves to |
 | --- | --- | --- |
-| Claude Code | `~/.claude/skills/u` | `~/my-prompts/u` ✅ |
-| Codex | `~/.codex/skills/u` | `~/my-prompts/u` ✅ |
-| Cursor | `~/.cursor/skills-cursor/u` | `~/my-prompts/u` ✅ |
+| Claude Code | `~/.claude/skills/u` | `~/promptalias/u` ✅ |
+| Codex | `~/.codex/skills/u` | `~/promptalias/u` ✅ |
+| Cursor | `~/.cursor/skills-cursor/u` | `~/promptalias/u` ✅ |
 
 The tradeoff: `npx skills` no longer manages these entries, so a future `add` or `update`
 may replace the links with copies again. If `/u` stops picking up your edits, that's what
@@ -64,7 +69,7 @@ happened — re-run the block above.
 Now that this repo is public, install from GitHub instead of a local path:
 
 ```sh
-npx skills add kishormorol/my-prompts --global --all
+npx skills add kishormorol/promptalias --global --all
 ```
 
 That also sets `Source:` to the repo rather than `local`, which is what makes

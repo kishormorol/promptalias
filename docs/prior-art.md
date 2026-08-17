@@ -2,11 +2,13 @@
 
 **Last checked: 17 August 2026.** Everything below rots. Re-check before trusting it.
 
-This repo exists because a tool called `promptalias` was designed and then killed. The
-plan was a single dense YAML file — twenty two-character aliases as twenty lines —
-compiled into native command files for Claude Code, Codex, and Cursor. The research
-killed it twice, on two different grounds. This note records what was found so the
-decision is re-checkable when the formats change.
+**`promptalias` is the name; the compiler is not what got built.** The original plan was a
+CLI: a single dense YAML file — twenty two-character aliases as twenty lines — compiled
+into native command files for Claude Code, Codex, and Cursor. Research killed that plan
+twice, on two different grounds, before any code was written. The name stayed; what ships
+under it is this folder of `SKILL.md` files.
+
+This note records what was found, so the decision is re-checkable when the formats change.
 
 Full design review lives in the Claude Design project
 *"Design review: adapter targets and compiler strategy"*.
@@ -135,6 +137,17 @@ Build the compiler if any of these become true:
 - **Reach.** You want the same triggers outside coding agents — Slack, email, docs. That
   is Espanso's job, and a different tool, not this one.
 
-Until then: one folder per prompt, `npx skills add ./my-prompts`, and the symlink means an
-edit to the source file is live in all three tools with no sync step at all. That is the
-part `promptalias` could never have beaten.
+Until then: one folder per prompt, installed with `npx skills add . --global --all`.
+
+One correction to the argument that killed the compiler, measured after the fact. The kill
+rationale claimed `npx skills` symlinks the source file so edits are live everywhere "with
+no sync step at all," and that this was the part a compiler could never beat. **That is
+false.** `add` copies into a hub at `~/.agents/skills/` and symlinks agent directories at
+the hub, so edits here are invisible until `add` is re-run — the same re-run-after-edit tax
+the compiler would have carried. It also silently missed two of the three tools, reporting
+success for Codex and Cursor while writing to neither. Live editing in all three took a
+hand-written symlink chain (see the README).
+
+This does not revive the compiler: the tax is one command, and rulesync and vsync still
+cover the rest of the scope. But the case was argued on a claim that turned out to be
+marketing rather than behaviour, and the record should say so.
