@@ -111,3 +111,23 @@ yourself.
 - `$ARGUMENTS` for everything after the trigger; `$1`–`$9` for positional args.
 - Keep bodies short enough to read in one screen. If a prompt needs more than that, it
   probably wants to be a real skill with reference files, not a shorthand.
+
+## Validate
+
+```sh
+./scripts/validate.py            # errors fail, warnings print
+./scripts/validate.py --strict   # warnings fail too
+```
+
+Python 3, no dependencies. It runs on every push via
+[`.github/workflows/validate.yml`](.github/workflows/validate.yml).
+
+It checks the conventions above, and one thing you cannot otherwise catch: a
+`description` with no **"Use when"** clause. That prompt installs fine, appears in
+`npx skills list`, and then never auto-invokes — nothing anywhere reports it as broken.
+It also catches a `name` that drifted from its folder, missing or malformed frontmatter,
+a folder with no `SKILL.md`, and frontmatter with an empty body.
+
+## License
+
+[MIT](LICENSE).
