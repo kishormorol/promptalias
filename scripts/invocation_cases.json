@@ -1,0 +1,14 @@
+{
+  "comment": "Sentences for measure_invocation.py. expect is the prompt that should be invoked, or null when nothing should fire. Each case is one real billed Claude Code session, so keep the list short.",
+  "cases": [
+    {"prompt": "make the parser also handle tabs", "expect": "u"},
+    {"prompt": "I need something that watches the log", "expect": "n"},
+    {"prompt": "cover the validator with tests", "expect": "t"},
+    {"prompt": "why is the resolver broken", "expect": "d"},
+    {"prompt": "does this look right to you", "expect": "rv"},
+    {"prompt": "walk me through resolve.py", "expect": "ex"},
+    {"prompt": "what would it take to support Windows", "expect": "p"},
+    {"prompt": "what is the weather today", "expect": null},
+    {"prompt": "rename the variable on line 40 of validate.py", "expect": null}
+  ]
+}

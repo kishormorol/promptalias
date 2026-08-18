@@ -345,15 +345,22 @@ Keep existing tests passing.
 
 <section id="unmeasured">
   <div class="wrap">
-    <h2>Not measured</h2>
+    <h2>The harder half</h2>
     <h3>Whether the agent fires on these words</h3>
-    <p>The table above measures <strong>the hook</strong> — the only matcher whose decision is
-      visible from outside. The agent matches the whole description with judgement rather than a
-      regex: it can fire on wording no example lists, and skip wording every example lists.
-      Nothing in this repo can see that happen.</p>
-    <p>So the phrasings are recorded as unambiguous, not as proven. Confirming the rest takes real
-      use, one prompt at a time — which is the honest state of it, and is what
-      <a href="https://github.com/kishormorol/promptalias/blob/main/docs/phrasings.md">the generated results page</a> says at the top.</p>
+    <p>The table above measures <strong>the hook</strong> — the matcher whose decision is visible
+      from outside. The agent is the other half: it reads the whole description and decides with
+      judgement rather than a regex, so it can fire on wording no example lists, and skip wording
+      every example lists.</p>
+    <p>That half was measured too, once. Nine ordinary sentences, one session each, <strong>hooks
+      disabled</strong> so the hook could not supply the answer it was being compared against.
+      Seven asked for a prompt and got it; two asked for neither and got silence.</p>
+    <p>It is evidence, not proof — one run per sentence, in non-interactive sessions, written by
+      the same hand as the descriptions. So the phrasings stay recorded as unambiguous rather than
+      as proven, and
+      <a href="https://github.com/kishormorol/promptalias/blob/main/docs/auto-invocation.md">the
+      method and its limits</a> are written down next to the result. Everything here — the seven
+      prompts, the phrasings, the vocabulary — is a starting point to fork and change, not a fixed
+      list.</p>
   </div>
 </section>
 
