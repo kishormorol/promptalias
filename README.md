@@ -39,16 +39,20 @@ The fix for both is one chain of symlinks — point the hub at this repo, then p
 tool at the hub:
 
 ```sh
-mkdir -p ~/.agents/skills ~/.codex/skills ~/.cursor/skills-cursor
+mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/skills ~/.cursor/skills-cursor
 for s in u n rv t d ex p; do
   rm -rf ~/.agents/skills/$s
-  ln -s  ~/promptalias/$s        ~/.agents/skills/$s
-  ln -sfn ~/.agents/skills/$s    ~/.codex/skills/$s
-  ln -sfn ~/.agents/skills/$s    ~/.cursor/skills-cursor/$s
+  ln -s  ~/promptalias/$s          ~/.agents/skills/$s
+  ln -sfn ../../.agents/skills/$s  ~/.claude/skills/$s
+  ln -sfn ~/.agents/skills/$s      ~/.codex/skills/$s
+  ln -sfn ~/.agents/skills/$s      ~/.cursor/skills-cursor/$s
 done
 ```
 
-Re-run it after adding a prompt — a new folder is not linked until you do.
+Re-run it after adding a prompt — a new folder is not linked until you do. The
+`~/.claude/skills` line matters: `add` created that entry for the first two prompts and
+nothing recreates it for later ones, so a new prompt reaches Codex and Cursor while
+staying invisible to Claude Code. Measured on this machine, by hitting exactly that.
 
 ### Current state on this machine
 
