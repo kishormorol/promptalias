@@ -58,6 +58,12 @@ def check(page, report):
         if f"{int(phrasings) + int(probes)} phrasings &amp; probes measured" not in page:
             report.append(f"the page's badge total is not {int(phrasings) + int(probes)}")
 
+    steps = len(re.findall(r"^      - name:", (REPO / ".github" / "workflows" / "validate.yml")
+                           .read_text(encoding="utf-8"), re.M))
+    words = {4: "Four", 5: "Five", 6: "Six", 7: "Seven"}
+    if f"{words.get(steps, steps)} checks, on every push" not in page:
+        report.append(f"the page does not say {words.get(steps, steps).lower()} checks, but CI runs {steps}")
+
     tests = re.search(r"Ran (\d+) tests",
                       run("python3", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_*.py"))
     if tests and f"{tests.group(1)} tests across" not in page:

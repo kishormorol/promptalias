@@ -140,6 +140,26 @@
   .lane .where { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-bottom: 12px; }
   .lane p { font-size: 14.5px; margin-bottom: 0; }
 
+  .nav { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 26px; }
+  .nav a { font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft);
+           text-decoration: none; border-bottom: 1px solid transparent; padding-bottom: 2px; }
+  .nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .start { margin: 26px 0 0; }
+  .start pre { margin-bottom: 8px; }
+  .start .hint { font-size: 13.5px; color: var(--ink-faint); margin: 0; }
+
+  .term { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+          padding: 18px; overflow-x: auto; margin: 0 0 20px; font-family: var(--mono);
+          font-size: 13.5px; line-height: 1.7; }
+  .term .p { color: var(--ink-faint); }
+  .term .cmd { color: var(--ink); }
+  .term .out { color: var(--ok); }
+  .term .quiet { color: var(--ink-faint); }
+  .term .err { color: var(--accent); }
+  .term div { white-space: pre; }
+  .term div + .sp { height: 10px; }
+
   footer { padding: 48px 0 72px; color: var(--ink-faint); font-size: 14px; }
   footer a { color: var(--ink-soft); }
 </style>
@@ -152,6 +172,17 @@
     <p class="tagline">Seven reusable prompts, written once as Agent Skills and shared across
       Claude Code, Codex, and Cursor. One folder per prompt, one <code>SKILL.md</code> each,
       no build step.</p>
+    <nav class="nav">
+      <a href="#unit">the unit</a>
+      <a href="#set">the seven</a>
+      <a href="#fires">how it fires</a>
+      <a href="#measured">measured</a>
+      <a href="#unmeasured">not measured</a>
+      <a href="#install">install</a>
+      <a href="#wording">your own wording</a>
+      <a href="#adding">add a prompt</a>
+      <a href="#checks">checks</a>
+    </nav>
     <div class="badges">
       <span class="badge">7 prompts</span>
       <span class="badge">3 tools</span>
@@ -163,10 +194,17 @@
       terse YAML file into per-tool command files. The three tools had already converged on a
       single format, so there was nothing left to compile. The name stuck; the compiler never
       happened.</p>
+    <div class="start">
+<pre><code><span class="c-dim"># all seven prompts, every agent, from this repo</span>
+npx skills add kishormorol/promptalias --global --all</code></pre>
+      <p class="hint">Two caveats that were measured rather than assumed — <code>add</code> copies
+        instead of linking back, and it reported success for two tools it never wrote to. The
+        <a href="#install">symlink chain below</a> is the fix for both.</p>
+    </div>
   </div>
 </header>
 
-<section>
+<section id="unit">
   <div class="wrap">
     <h2>The unit</h2>
     <h3>A prompt is a folder with one file in it</h3>
@@ -194,7 +232,7 @@ Keep existing tests passing.
   </div>
 </section>
 
-<section>
+<section id="set">
   <div class="wrap">
     <h2>The set</h2>
     <h3>Seven prompts, split by what they are allowed to touch</h3>
@@ -212,7 +250,7 @@ Keep existing tests passing.
   </div>
 </section>
 
-<section>
+<section id="fires">
   <div class="wrap">
     <h2>How it fires</h2>
     <h3>Two paths from a sentence to a prompt</h3>
@@ -277,7 +315,7 @@ Keep existing tests passing.
   </div>
 </section>
 
-<section>
+<section id="measured">
   <div class="wrap">
     <h2>Measured</h2>
     <h3>Sentences nobody copied out of a description</h3>
@@ -305,7 +343,7 @@ Keep existing tests passing.
   </div>
 </section>
 
-<section>
+<section id="unmeasured">
   <div class="wrap">
     <h2>Not measured</h2>
     <h3>Whether the agent fires on these words</h3>
@@ -319,7 +357,7 @@ Keep existing tests passing.
   </div>
 </section>
 
-<section>
+<section id="install">
   <div class="wrap">
     <h2>Install</h2>
     <h3>One chain of symlinks, no sync step</h3>
@@ -379,10 +417,72 @@ done</code></pre>
   </div>
 </section>
 
-<section>
+<section id="wording">
+  <div class="wrap">
+    <h2>Your own wording</h2>
+    <h3>When the description keeps missing how you say it</h3>
+    <p>Turn the hook on by copying one block into <code>~/.claude/settings.json</code>. It runs on
+      every prompt you submit, so the properties that matter are negative: it never blocks, never
+      rewrites, and exits silently on any failure.</p>
+<pre><code>{ <span class="c-key">"hooks"</span>: { <span class="c-key">"UserPromptSubmit"</span>: [ { <span class="c-key">"hooks"</span>: [
+  { <span class="c-key">"type"</span>: "command", <span class="c-key">"command"</span>: "~/promptalias/hooks/resolve.py", <span class="c-key">"timeout"</span>: 5 }
+] } ] } }</code></pre>
+    <p>Then add how you actually phrase things. A lone capital stands for whatever you really say,
+      and your own wording outranks anything lifted from a description.</p>
+<pre><code><span class="c-dim">hooks/vocabulary.json</span>
+{ <span class="c-key">"prompts"</span>: {
+    <span class="c-key">"u"</span>:  ["make X also handle Y", "wire X up to Y"],
+    <span class="c-key">"d"</span>:  ["track down X", "what's up with X"],
+    <span class="c-key">"rv"</span>: ["eyeball this", "poke holes in this"]
+} }</code></pre>
+    <p>Ask it what it would do with a sentence before trusting it with one:</p>
+    <div class="term">
+      <div><span class="p">$</span> <span class="cmd">./hooks/resolve.py --explain "make the parser also handle tabs"</span></div>
+      <div><span class="out">/u  &lt;- "make X also handle Y" (vocabulary)</span></div>
+      <div class="sp"></div>
+      <div><span class="p">$</span> <span class="cmd">./hooks/resolve.py --explain "sanity check this before I push"</span></div>
+      <div><span class="out">/rv  &lt;- "sanity check this" (description)</span></div>
+      <div class="sp"></div>
+      <div><span class="p">$</span> <span class="cmd">./hooks/resolve.py --explain "what is the weather today"</span></div>
+      <div><span class="quiet">no match</span></div>
+    </div>
+    <p>Two prompts that match equally well also produce <em>no match</em>. A silent hook is the
+      designed outcome, not a broken one — the worst it can do is fail to suggest something.</p>
+  </div>
+</section>
+
+<section id="adding">
+  <div class="wrap">
+    <h2>Add your own</h2>
+    <h3>A folder, a file, and one rule that matters</h3>
+    <p>The folder name is the trigger, so keep it short. Bodies stay readable in one screen; if a
+      prompt needs more than that, it wants to be a real skill with reference files.</p>
+<pre><code>mkdir mytrigger &amp;&amp; $EDITOR mytrigger/SKILL.md</code></pre>
+<pre><code>---
+<span class="c-key">name</span>: mytrigger
+<span class="c-key">description</span>: Do X. <span class="c-ok">Use when</span> the user asks to …
+---
+
+Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followed the trigger.</code></pre>
+    <p>The rule that matters more than the rest: write the description as
+      <em>“Do X. Use when Y.”</em> A bare label like <code>"Update a feature"</code> installs
+      fine, appears in <code>skills list</code>, and then never fires on its own. Nothing anywhere
+      reports that as broken — so the validator does:</p>
+    <div class="term">
+      <div><span class="p">$</span> <span class="cmd">./scripts/validate.py</span></div>
+      <div><span class="err">error  mytrigger/SKILL.md: `description` has no "Use when" clause, so this</span></div>
+      <div><span class="err">       prompt will never auto-invoke — it will only work if you type the</span></div>
+      <div><span class="err">       trigger yourself</span></div>
+      <div class="sp"></div>
+      <div><span class="quiet">1 error(s) across 8 prompt(s)</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="checks">
   <div class="wrap">
     <h2>Kept honest by</h2>
-    <h3>Four checks, on every push</h3>
+    <h3>Five checks, on every push</h3>
     <ul>
       <li><code>validate.py --strict</code> — every prompt is a well-formed skill, and no
         description is missing its <strong>Use when</strong> clause.</li>
@@ -392,16 +492,25 @@ done</code></pre>
         that claim them.</li>
       <li><code>check_phrasings.py --check</code> — the published results page has not gone
         stale.</li>
+      <li><code>check_page.py</code> — this page still states the counts and routing outcomes the
+        repo actually has. It is the only file here that talks to people who cannot see the repo,
+        so it is the one that rots unnoticed.</li>
     </ul>
+    <p>Python 3, no dependencies, nothing to install. The same five commands run locally.</p>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <a href="https://github.com/kishormorol/promptalias">github.com/kishormorol/promptalias</a>
-    · <a href="https://github.com/kishormorol/promptalias/blob/main/docs/prior-art.md">why this is not a CLI</a>
-    · <a href="https://github.com/kishormorol/promptalias/blob/main/docs/phrasings.md">measured phrasings</a>
-    · MIT
+    <p style="margin-bottom:10px"><a href="https://github.com/kishormorol/promptalias">github.com/kishormorol/promptalias</a>
+      — seven prompts, a validator, a hook, and the notes explaining why there is no compiler.</p>
+    <p style="margin-bottom:0">
+      <a href="https://github.com/kishormorol/promptalias/blob/main/docs/prior-art.md">why this is not a CLI</a> ·
+      <a href="https://github.com/kishormorol/promptalias/blob/main/docs/phrasings.md">measured phrasings</a> ·
+      <a href="https://github.com/kishormorol/promptalias/blob/main/hooks/resolve.py">the hook</a> ·
+      <a href="https://github.com/kishormorol/promptalias/blob/main/scripts/validate.py">the validator</a> ·
+      <a href="https://github.com/kishormorol/promptalias/blob/main/LICENSE">MIT</a>
+    </p>
   </div>
 </footer>
 
