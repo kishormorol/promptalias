@@ -1,5 +1,9 @@
 # promptalias
 
+**[The visual walkthrough is at kishormorol.github.io/promptalias](https://kishormorol.github.io/promptalias/)** —
+what a prompt is, the seven of them, how a typed sentence reaches one, and what is actually
+measured.
+
 Reusable prompts, written once as [Agent Skills](https://skills.sh) and shared across
 Claude Code, Codex, and Cursor. Each prompt is a folder with a `SKILL.md`, and
 `npx skills` distributes them to every agent's skills directory.
@@ -132,9 +136,10 @@ yourself.
 python3 -m unittest discover -s scripts      # tests for the validator and the hook
 ./scripts/check_phrasings.py                 # do the phrasings select their own prompt?
 ./scripts/check_phrasings.py --record        # rewrite docs/phrasings.md
+./scripts/check_page.py                      # does the published page still tell the truth?
 ```
 
-Python 3, no dependencies, all four run on every push via
+Python 3, no dependencies, all five run on every push via
 [`.github/workflows/validate.yml`](.github/workflows/validate.yml).
 
 It checks the conventions above, and one thing you cannot otherwise catch: a
@@ -149,6 +154,11 @@ words. It runs every quoted example, and every sentence in
 one lands on the wrong prompt or ties. Results are recorded in
 [`docs/phrasings.md`](docs/phrasings.md). It measures the hook, not the agent — see that
 page for what stays unmeasured.
+
+`check_page.py` guards the one thing nothing else can see rotting: [`docs/index.html`](docs/index.html)
+is served publicly and states counts and routing outcomes. Add a prompt, rename a probe, or gain a
+test, and it would keep telling visitors the old number. So the counts and every routing row on it
+are checked against the repo on each push.
 
 ## Your own wording (Claude Code only)
 

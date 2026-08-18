@@ -26,3 +26,6 @@ jobs:
 
       - name: docs/phrasings.md is current
         run: ./scripts/check_phrasings.py --check
+
+      - name: The published page still matches the repo
+        run: ./scripts/check_page.py

@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>promptalias — reusable prompts as Agent Skills</title>
+<meta name="description" content="Seven reusable prompts, written once as SKILL.md files and shared across Claude Code, Codex, and Cursor. How they fire, and what is actually measured.">
+<style>
+  :root {
+    --bg: #fbfbfa;
+    --panel: #ffffff;
+    --ink: #1a1a19;
+    --ink-soft: #55534e;
+    --ink-faint: #83807a;
+    --line: #e3e1dc;
+    --line-strong: #cfccc5;
+    --accent: #b8552e;
+    --accent-soft: #f4e6df;
+    --ok: #3d7a4e;
+    --ok-soft: #e5f0e7;
+    --code-bg: #f5f4f1;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16161a;
+      --panel: #1d1d22;
+      --ink: #edece8;
+      --ink-soft: #b3b0a9;
+      --ink-faint: #86837c;
+      --line: #2e2e35;
+      --line-strong: #43434c;
+      --accent: #e08a5f;
+      --accent-soft: #34241d;
+      --ok: #7fb98c;
+      --ok-soft: #1e2c21;
+      --code-bg: #131317;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  header { padding: 72px 0 48px; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 40px; line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.02em; }
+  h1 .slash { color: var(--accent); }
+  .tagline { font-size: 19px; color: var(--ink-soft); margin: 0 0 28px; max-width: 60ch; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    font-family: var(--mono); font-size: 12.5px; padding: 4px 10px;
+    border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink-soft);
+    background: var(--panel);
+  }
+  .badge.ok { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+
+  .note {
+    margin: 28px 0 0; padding: 14px 18px; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 6px 6px 0; font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .note strong { color: var(--ink); }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  h2 { font-size: 13px; font-family: var(--mono); text-transform: uppercase;
+       letter-spacing: 0.08em; color: var(--ink-faint); margin: 0 0 8px; font-weight: 600; }
+  h3 { font-size: 26px; margin: 0 0 16px; letter-spacing: -0.01em; line-height: 1.25; }
+  p { margin: 0 0 16px; color: var(--ink-soft); max-width: 68ch; }
+  p strong, li strong { color: var(--ink); }
+
+  code { font-family: var(--mono); font-size: 0.9em; background: var(--code-bg);
+         padding: 2px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+        padding: 18px; overflow-x: auto; margin: 0 0 20px; }
+  pre code { background: none; padding: 0; font-size: 13.5px; line-height: 1.65; }
+  .c-key { color: var(--accent); }
+  .c-dim { color: var(--ink-faint); }
+  .c-ok  { color: var(--ok); }
+
+  .anno { display: grid; gap: 10px; margin: 0 0 8px; }
+  .anno div { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: baseline;
+              font-size: 14.5px; color: var(--ink-soft); }
+  .anno span { font-family: var(--mono); font-size: 12.5px; color: var(--accent);
+               text-align: right; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  .card .trig { font-family: var(--mono); font-size: 17px; color: var(--accent); font-weight: 600; }
+  .card .does { font-size: 14.5px; color: var(--ink-soft); margin-top: 4px; }
+  .card .says { font-family: var(--mono); font-size: 12px; color: var(--ink-faint);
+                margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line-strong); }
+
+  figure { margin: 0 0 24px; }
+  svg { display: block; width: 100%; height: auto; }
+  .s-box { fill: var(--panel); stroke: var(--line-strong); }
+  .s-box-a { fill: var(--accent-soft); stroke: var(--accent); }
+  .s-line { stroke: var(--line-strong); fill: none; }
+  .s-line-a { stroke: var(--accent); fill: none; }
+  .s-t { fill: var(--ink); font-family: var(--sans); font-size: 13px; }
+  .s-tm { fill: var(--ink); font-family: var(--mono); font-size: 12.5px; }
+  .s-td { fill: var(--ink-faint); font-family: var(--sans); font-size: 11.5px; }
+  .s-ta { fill: var(--accent); font-family: var(--mono); font-size: 12px; }
+  .mk { fill: var(--line-strong); }
+  .mk-a { fill: var(--accent); }
+  figcaption { font-size: 13.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  .scroll { overflow-x: auto; margin: 0 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 620px; }
+  th { text-align: left; font-family: var(--mono); font-size: 11.5px; text-transform: uppercase;
+       letter-spacing: 0.06em; color: var(--ink-faint); font-weight: 600;
+       padding: 0 14px 8px 0; border-bottom: 1px solid var(--line-strong); }
+  td { padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line); color: var(--ink-soft);
+       vertical-align: top; }
+  td.said { color: var(--ink); }
+  td .m { font-family: var(--mono); font-size: 12.5px; }
+  td .trig { font-family: var(--mono); color: var(--accent); font-weight: 600; }
+  td .silent { font-family: var(--mono); color: var(--ink-faint); }
+
+  ul { margin: 0 0 16px; padding-left: 20px; color: var(--ink-soft); max-width: 68ch; }
+  li { margin-bottom: 8px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 680px) {
+    .split { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+    h3 { font-size: 22px; }
+    header { padding: 48px 0 36px; }
+  }
+  .lane { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  .lane h4 { margin: 0 0 4px; font-size: 16px; }
+  .lane .where { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-bottom: 12px; }
+  .lane p { font-size: 14.5px; margin-bottom: 0; }
+
+  footer { padding: 48px 0 72px; color: var(--ink-faint); font-size: 14px; }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1><span class="slash">/</span>promptalias</h1>
+    <p class="tagline">Seven reusable prompts, written once as Agent Skills and shared across
+      Claude Code, Codex, and Cursor. One folder per prompt, one <code>SKILL.md</code> each,
+      no build step.</p>
+    <div class="badges">
+      <span class="badge">7 prompts</span>
+      <span class="badge">3 tools</span>
+      <span class="badge">0 dependencies</span>
+      <span class="badge ok">101 phrasings &amp; probes measured, 0 failing</span>
+    </div>
+    <p class="note"><strong>There is no <code>promptalias</code> command.</strong> The name comes
+      from a CLI that was designed and then killed before implementation — a compiler from one
+      terse YAML file into per-tool command files. The three tools had already converged on a
+      single format, so there was nothing left to compile. The name stuck; the compiler never
+      happened.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The unit</h2>
+    <h3>A prompt is a folder with one file in it</h3>
+    <p>The folder name is the trigger, so <code>u/</code> gives you <code>/u</code>. Everything
+      that decides whether the prompt fires lives in two lines of frontmatter.</p>
+<pre><code><span class="c-dim">u/SKILL.md</span>
+---
+<span class="c-key">name</span>: u
+<span class="c-key">description</span>: Update an existing feature while keeping its tests green.
+  <span class="c-ok">Use when</span> the user asks to change, extend, modify, or adjust behaviour
+  that already exists — "update the X", "make X also do Y", "tweak X" …
+---
+
+# Update a feature
+
+Update this feature: <span class="c-key">$ARGUMENTS</span>.
+Keep existing tests passing.
+…</code></pre>
+    <div class="anno">
+      <div><span>name</span><p style="margin:0">Must match the folder. The validator fails the build if it drifts.</p></div>
+      <div><span>description</span><p style="margin:0">The <strong>only</strong> text matched against what you typed. Written as <em>“Do X. Use when Y.”</em></p></div>
+      <div><span>Use when</span><p style="margin:0">A description without this clause installs fine, lists fine, and then never fires. Nothing anywhere reports it — so the validator does.</p></div>
+      <div><span>body</span><p style="margin:0">The prompt itself. <code>$ARGUMENTS</code> takes whatever followed the trigger.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The set</h2>
+    <h3>Seven prompts, split by what they are allowed to touch</h3>
+    <p><code>/n</code> and <code>/u</code> divide on whether the thing exists yet.
+      <code>/ex</code> and <code>/p</code> are the two that write no code at all.</p>
+    <div class="grid">
+      <div class="card"><div class="trig">/n</div><div class="does">Build something new that isn’t there yet, with tests</div><div class="says">“build me a X”</div></div>
+      <div class="card"><div class="trig">/u</div><div class="does">Update a feature, keeping its tests green</div><div class="says">“make X also do Y”</div></div>
+      <div class="card"><div class="trig">/t</div><div class="does">Write tests for code that already works</div><div class="says">“cover X with tests”</div></div>
+      <div class="card"><div class="trig">/d</div><div class="does">Track a failure to its root cause and fix it</div><div class="says">“why is X broken”</div></div>
+      <div class="card"><div class="trig">/rv</div><div class="does">Review the last diff for correctness, security, performance</div><div class="says">“did I break anything”</div></div>
+      <div class="card"><div class="trig">/ex</div><div class="does">Explain existing code, changing nothing</div><div class="says">“walk me through X”</div></div>
+      <div class="card"><div class="trig">/p</div><div class="does">Plan an approach before any code is written</div><div class="says">“what would it take to X”</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it fires</h2>
+    <h3>Two paths from a sentence to a prompt</h3>
+    <p>The portable path works in all three tools and is the one to lean on. The hook exists for
+      the case the first path keeps missing: your own wording.</p>
+    <figure>
+      <svg viewBox="0 0 820 300" role="img" aria-label="A typed sentence reaches a prompt either through the agent matching the description in all three tools, or through the Claude Code hook matching quoted phrases and your own vocabulary.">
+        <rect class="s-box" x="1" y="118" width="176" height="62" rx="9"/>
+        <text class="s-t" x="20" y="143">You type a sentence</text>
+        <text class="s-td" x="20" y="164">“why is the cache broken”</text>
+
+        <path class="s-line" d="M177 137 H250" marker-end="url(#a)"/>
+        <path class="s-line-a" d="M177 161 H250" marker-end="url(#aa)"/>
+
+        <rect class="s-box" x="250" y="36" width="270" height="94" rx="9"/>
+        <text class="s-t" x="270" y="62" font-weight="600">1 · The agent matches</text>
+        <text class="s-td" x="270" y="83">It reads every prompt’s description and</text>
+        <text class="s-td" x="270" y="100">judges which one fits what you said.</text>
+        <text class="s-ta" x="270" y="120">Claude Code · Codex · Cursor</text>
+
+        <rect class="s-box-a" x="250" y="170" width="270" height="112" rx="9"/>
+        <text class="s-t" x="270" y="196" font-weight="600">2 · The hook matches</text>
+        <text class="s-td" x="270" y="217">hooks/resolve.py reads the sentence,</text>
+        <text class="s-td" x="270" y="234">matches quoted examples + your own</text>
+        <text class="s-td" x="270" y="251">phrases, appends one line of context.</text>
+        <text class="s-ta" x="270" y="271">Claude Code only</text>
+
+        <path class="s-line" d="M520 83 H600 V128" marker-end="url(#a)"/>
+        <path class="s-line-a" d="M520 226 H600 V172" marker-end="url(#aa)"/>
+
+        <rect class="s-box" x="600" y="128" width="218" height="44" rx="9"/>
+        <text class="s-tm" x="622" y="156"><tspan class="s-ta">/d</tspan> runs</text>
+
+        <defs>
+          <marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path class="mk" d="M0 0 L7 3.5 L0 7 z"/>
+          </marker>
+          <marker id="aa" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path class="mk-a" d="M0 0 L7 3.5 L0 7 z"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>The hook never blocks, never rewrites, and exits silently on any failure — the
+        worst it can do is fail to suggest something.</figcaption>
+    </figure>
+    <div class="split">
+      <div class="lane">
+        <h4>Widen the description first</h4>
+        <div class="where">works in all three tools</div>
+        <p>Listing more of the ways a request actually gets worded costs nothing and travels
+          everywhere. This is the portable half, and the one to exhaust before reaching for
+          anything else.</p>
+      </div>
+      <div class="lane">
+        <h4>Then, if it still misses, the hook</h4>
+        <div class="where">Claude Code only</div>
+        <p>Selecting a prompt from your own keywords needs the input string, which only a hook
+          sees. Codex and Cursor expose no equivalent — so a phrase that works only here does not
+          travel. That cost is paid on purpose.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Measured</h2>
+    <h3>Sentences nobody copied out of a description</h3>
+    <p>Every phrasing is run back through the resolver, alone and inside five carrier sentences,
+      and has to come back pointing at the prompt that claims it. These rows come from
+      <code>scripts/probes.json</code> — written from scratch, then checked on every push.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>What you type</th><th>Matched on</th><th>Runs</th></tr></thead>
+        <tbody>
+          <tr><td class="said">make the parser also handle tabs</td><td><span class="m">“make X also handle Y”</span></td><td><span class="trig">/u</span></td></tr>
+          <tr><td class="said">I need something that watches the log</td><td><span class="m">“I need something that Y”</span></td><td><span class="trig">/n</span></td></tr>
+          <tr><td class="said">cover the parser with tests</td><td><span class="m">“cover X with tests”</span></td><td><span class="trig">/t</span></td></tr>
+          <tr><td class="said">why is the cache broken</td><td><span class="m">“why is X broken”</span></td><td><span class="trig">/d</span></td></tr>
+          <tr><td class="said">did I break anything with that change</td><td><span class="m">“did I break anything”</span></td><td><span class="trig">/rv</span></td></tr>
+          <tr><td class="said">walk me through resolve.py</td><td><span class="m">“walk me through X”</span></td><td><span class="trig">/ex</span></td></tr>
+          <tr><td class="said">what would it take to support Windows</td><td><span class="m">“what would it take to X”</span></td><td><span class="trig">/p</span></td></tr>
+          <tr><td class="said">deploy to production</td><td><span class="m c-dim">—</span></td><td><span class="silent">silence</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The first row is the interesting one. <code>/u</code>’s description lists
+      <em>“make X also do Y”</em>, which does not match <em>“also handle tabs”</em> — exactly the
+      kind of miss the hook’s <code>vocabulary.json</code> exists to close.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Not measured</h2>
+    <h3>Whether the agent fires on these words</h3>
+    <p>The table above measures <strong>the hook</strong> — the only matcher whose decision is
+      visible from outside. The agent matches the whole description with judgement rather than a
+      regex: it can fire on wording no example lists, and skip wording every example lists.
+      Nothing in this repo can see that happen.</p>
+    <p>So the phrasings are recorded as unambiguous, not as proven. Confirming the rest takes real
+      use, one prompt at a time — which is the honest state of it, and is what
+      <a href="https://github.com/kishormorol/promptalias/blob/main/docs/phrasings.md">the generated results page</a> says at the top.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Install</h2>
+    <h3>One chain of symlinks, no sync step</h3>
+    <p><code>npx skills add</code> copies rather than links, and reported success for two tools it
+      never wrote to — both measured, both documented. Pointing the hub at the repo and each tool
+      at the hub makes an edit here live everywhere, immediately.</p>
+    <figure>
+      <svg viewBox="0 0 820 210" role="img" aria-label="The repository is symlinked into the agents hub, which is symlinked into the Claude Code, Codex, and Cursor skills directories.">
+        <rect class="s-box-a" x="1" y="76" width="196" height="58" rx="9"/>
+        <text class="s-tm" x="22" y="101">~/promptalias/u</text>
+        <text class="s-td" x="22" y="120">the only real copy</text>
+
+        <path class="s-line-a" d="M197 105 H286" marker-end="url(#aa2)"/>
+        <text class="s-td" x="206" y="97">symlink</text>
+
+        <rect class="s-box" x="286" y="76" width="212" height="58" rx="9"/>
+        <text class="s-tm" x="306" y="101">~/.agents/skills/u</text>
+        <text class="s-td" x="306" y="120">the hub</text>
+
+        <path class="s-line" d="M498 105 H556 V32 H600" marker-end="url(#a2)"/>
+        <path class="s-line" d="M498 105 H600" marker-end="url(#a2)"/>
+        <path class="s-line" d="M498 105 H556 V178 H600" marker-end="url(#a2)"/>
+
+        <rect class="s-box" x="600" y="10" width="218" height="44" rx="9"/>
+        <text class="s-tm" x="618" y="30">~/.claude/skills</text>
+        <text class="s-td" x="618" y="46">Claude Code</text>
+
+        <rect class="s-box" x="600" y="83" width="218" height="44" rx="9"/>
+        <text class="s-tm" x="618" y="103">~/.codex/skills</text>
+        <text class="s-td" x="618" y="119">Codex</text>
+
+        <rect class="s-box" x="600" y="156" width="218" height="44" rx="9"/>
+        <text class="s-tm" x="618" y="176">~/.cursor/skills-cursor</text>
+        <text class="s-td" x="618" y="192">Cursor</text>
+
+        <defs>
+          <marker id="a2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path class="mk" d="M0 0 L7 3.5 L0 7 z"/>
+          </marker>
+          <marker id="aa2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path class="mk-a" d="M0 0 L7 3.5 L0 7 z"/>
+          </marker>
+        </defs>
+      </svg>
+    </figure>
+<pre><code><span class="c-dim"># every prompt, every tool, resolving to this repo</span>
+mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/skills ~/.cursor/skills-cursor
+for s in u n rv t d ex p; do
+  rm -rf ~/.agents/skills/$s
+  ln -s  ~/promptalias/$s          ~/.agents/skills/$s
+  ln -sfn ../../.agents/skills/$s  ~/.claude/skills/$s
+  ln -sfn ~/.agents/skills/$s      ~/.codex/skills/$s
+  ln -sfn ~/.agents/skills/$s      ~/.cursor/skills-cursor/$s
+done</code></pre>
+    <p>The tradeoff: <code>npx skills</code> no longer manages these entries, so a future
+      <code>add</code> may replace the links with copies again.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Kept honest by</h2>
+    <h3>Four checks, on every push</h3>
+    <ul>
+      <li><code>validate.py --strict</code> — every prompt is a well-formed skill, and no
+        description is missing its <strong>Use when</strong> clause.</li>
+      <li><code>unittest</code> — 46 tests across the validator and the resolver, most of them on
+        the hook’s silences.</li>
+      <li><code>check_phrasings.py</code> — 77 phrasings and 24 probes still select the prompts
+        that claim them.</li>
+      <li><code>check_phrasings.py --check</code> — the published results page has not gone
+        stale.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="https://github.com/kishormorol/promptalias">github.com/kishormorol/promptalias</a>
+    · <a href="https://github.com/kishormorol/promptalias/blob/main/docs/prior-art.md">why this is not a CLI</a>
+    · <a href="https://github.com/kishormorol/promptalias/blob/main/docs/phrasings.md">measured phrasings</a>
+    · MIT
+  </div>
+</footer>
+
+</body>
+</html>
