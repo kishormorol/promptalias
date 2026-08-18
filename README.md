@@ -39,16 +39,16 @@ The fix for both is one chain of symlinks — point the hub at this repo, then p
 tool at the hub:
 
 ```sh
-rm -rf ~/.agents/skills/u ~/.agents/skills/rv
-ln -s ~/promptalias/u  ~/.agents/skills/u
-ln -s ~/promptalias/rv ~/.agents/skills/rv
-
-mkdir -p ~/.codex/skills ~/.cursor/skills-cursor
-for s in u rv; do
-  ln -sfn ~/.agents/skills/$s ~/.codex/skills/$s
-  ln -sfn ~/.agents/skills/$s ~/.cursor/skills-cursor/$s
+mkdir -p ~/.agents/skills ~/.codex/skills ~/.cursor/skills-cursor
+for s in u n rv t d ex p; do
+  rm -rf ~/.agents/skills/$s
+  ln -s  ~/promptalias/$s        ~/.agents/skills/$s
+  ln -sfn ~/.agents/skills/$s    ~/.codex/skills/$s
+  ln -sfn ~/.agents/skills/$s    ~/.cursor/skills-cursor/$s
 done
 ```
+
+Re-run it after adding a prompt — a new folder is not linked until you do.
 
 ### Current state on this machine
 
@@ -79,8 +79,16 @@ That also sets `Source:` to the repo rather than `local`, which is what makes
 
 | Trigger | Does |
 | --- | --- |
+| `/n` | Build something new that isn't there yet, with tests |
 | `/u` | Update an existing feature, keeping its tests green |
+| `/t` | Write tests for code that already works |
+| `/d` | Track a failure to its root cause and fix it |
 | `/rv` | Review the last diff for correctness, security, and performance |
+| `/ex` | Explain existing code, changing nothing |
+| `/p` | Plan an approach before any code is written |
+
+`/n` and `/u` split on whether the thing exists yet; `/ex` and `/p` are the two that
+write no code at all.
 
 The folder name is the trigger, so keep folder names short — `u/` gives you `/u`.
 
