@@ -7,8 +7,10 @@ implicitly. Nothing reports it. So it is checked here.
 
     ./scripts/validate.py            # errors fail, warnings print
     ./scripts/validate.py --strict   # warnings fail too
+    ./scripts/validate.py DIR        # check DIR instead of this repo
 """
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -16,7 +18,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 # Directories at the repo root that are not prompts.
-NOT_PROMPTS = {"docs", "scripts", "node_modules"}
+NOT_PROMPTS = {"docs", "hooks", "scripts", "node_modules"}
 
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 USE_WHEN_RE = re.compile(r"\buse when\b", re.IGNORECASE)
@@ -132,12 +134,54 @@ def check_prompt(folder, report):
     return description
 
 
+def check_vocabulary(root, triggers, report):
+    """Every trigger the hook's vocabulary names must be a prompt that exists."""
+    path = root / "hooks" / "vocabulary.json"
+    if not path.is_file():
+        return
+    where = "hooks/vocabulary.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        report.error(where, f"not valid JSON — {exc}")
+        return
+    entries = data.get("prompts")
+    if not isinstance(entries, dict):
+        report.error(where, "missing a `prompts` object mapping trigger -> phrases")
+        return
+    for trigger, phrases in sorted(entries.items()):
+        if trigger not in triggers:
+            report.error(where, f"names {trigger!r}, which is not a prompt folder")
+        if not isinstance(phrases, list) or not all(isinstance(x, str) for x in phrases):
+            report.error(where, f"{trigger!r}: phrases must be a list of strings")
+        elif not phrases:
+            report.warn(where, f"{trigger!r}: empty phrase list adds nothing")
+
+
+def parse_args(argv):
+    """Return (root, strict). A bare argument is the directory to check."""
+    root, strict = REPO, False
+    for arg in argv:
+        if arg == "--strict":
+            strict = True
+        elif arg.startswith("-"):
+            print(f"unknown option {arg!r}", file=sys.stderr)
+            sys.exit(2)
+        else:
+            root = Path(arg)
+    return root, strict
+
+
 def main():
-    strict = "--strict" in sys.argv[1:]
+    root, strict = parse_args(sys.argv[1:])
     report = Report()
 
+    if not root.is_dir():
+        print(f"not a directory: {root}", file=sys.stderr)
+        return 1
+
     folders = sorted(
-        p for p in REPO.iterdir()
+        p for p in root.iterdir()
         if p.is_dir() and not p.name.startswith(".") and p.name not in NOT_PROMPTS
     )
 
@@ -147,6 +191,8 @@ def main():
 
     for folder in folders:
         check_prompt(folder, report)
+
+    check_vocabulary(root, {f.name for f in folders}, report)
 
     for where, message in report.errors:
         print(f"error  {where}: {message}")

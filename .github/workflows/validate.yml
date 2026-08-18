@@ -14,5 +14,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Validate every prompt folder
-        run: ./scripts/validate.py
+        run: ./scripts/validate.py --strict
+
+      - name: Test the validator
+        run: python3 -m unittest discover -s scripts -p "test_*.py" -v
