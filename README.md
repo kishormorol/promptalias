@@ -1,5 +1,7 @@
 # promptalias
 
+[![validate](https://github.com/kishormorol/promptalias/actions/workflows/validate.yml/badge.svg)](https://github.com/kishormorol/promptalias/actions/workflows/validate.yml)
+
 **[The visual walkthrough is at kishormorol.github.io/promptalias](https://kishormorol.github.io/promptalias/)** —
 what a prompt is, the seven of them, how a typed sentence reaches one, and what is actually
 measured.
