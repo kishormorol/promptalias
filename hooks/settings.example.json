@@ -1,0 +1,16 @@
+{
+  "comment": "Copy this block into ~/.claude/settings.json (global) or .claude/settings.json (one project) to turn on hooks/resolve.py. Claude Code only. Adjust the path if this repo is not at ~/promptalias.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/promptalias/hooks/resolve.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

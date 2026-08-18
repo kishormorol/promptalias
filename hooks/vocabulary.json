@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "comment": "Your own wording, for when a description's phrasings miss. Read only by hooks/resolve.py, so it is Claude Code only. Outranks anything lifted from a description. A capital letter on its own stands for whatever you actually say: 'make X also handle Y'.",
+  "prompts": {
+    "u": ["make X also handle Y", "have X do Y as well", "wire X up to Y"],
+    "n": ["spin up a X", "stand up a X"],
+    "rv": ["eyeball this", "poke holes in this"],
+    "t": ["pin X down with tests"],
+    "d": ["track down X", "what's up with X"],
+    "ex": ["what is this doing", "give me the tour of X"],
+    "p": ["sketch out X", "how would you approach X"]
+  }
+}

@@ -1,6 +1,8 @@
 # Why this repo is a folder of SKILL.md files and not a CLI
 
 **Last checked: 17 August 2026.** Everything below rots. Re-check before trusting it.
+Measured claims about how the phrasings route live in
+[`phrasings.md`](phrasings.md), regenerated from the code rather than written by hand.
 
 **`promptalias` is the name; the compiler is not what got built.** The original plan was a
 CLI: a single dense YAML file — twenty two-character aliases as twenty lines — compiled
@@ -131,7 +133,8 @@ doesn't.
 Build the compiler if any of these become true:
 
 - **Volume.** Past roughly twenty prompts, the folder-per-alias tax starts to bite, and a
-  terse-YAML compiler earns its keep.
+  terse-YAML compiler earns its keep. *Seven as of 17 Aug 2026 — `/n /u /t /d /rv /ex /p`.
+  Not close.*
 - **Divergence.** The three tools split again on `SKILL.md` frontmatter, restoring the
   translation problem that `npx skills` currently makes moot.
 - **Reach.** You want the same triggers outside coding agents — Slack, email, docs. That
@@ -145,6 +148,18 @@ Build the compiler if any of these become true:
   built here is single-tool and forfeits the cross-tool property that killed the
   compiler in the first place. Try richer `Use when` clauses before writing the hook —
   they cost nothing and work in all three tools.
+
+  **Acted on, 17 Aug 2026, in that order.** The clauses were widened first (878882a).
+  The hook followed as `hooks/resolve.py`, taking its phrases from the descriptions
+  themselves plus `hooks/vocabulary.json`, so the two cannot drift apart. The cost was
+  paid knowingly and is exactly as stated: a phrase that only works through the hook
+  does not travel to Codex or Cursor. It advises rather than decides — one line of
+  context naming the prompt it matched — which keeps the failure mode to a missed
+  suggestion rather than a hijacked turn.
+
+  This does not revive the compiler either. The Resolver is real now, but it lives in a
+  hook rather than in a build step, and it reads the `SKILL.md` files as they are. There
+  is still nothing to compile.
 
 Until then: one folder per prompt, installed with `npx skills add . --global --all`.
 

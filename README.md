@@ -136,6 +136,42 @@ It checks the conventions above, and one thing you cannot otherwise catch: a
 It also catches a `name` that drifted from its folder, missing or malformed frontmatter,
 a folder with no `SKILL.md`, and frontmatter with an empty body.
 
+## Your own wording (Claude Code only)
+
+A `description` fires a prompt when the agent judges your words to match it. If it keeps
+missing on the way *you* phrase things, [`hooks/resolve.py`](hooks/resolve.py) closes the
+gap: a `UserPromptSubmit` hook that reads what you typed, matches it against every quoted
+example in every `description` plus your own phrases in
+[`hooks/vocabulary.json`](hooks/vocabulary.json), and appends one line naming the prompt
+it matched. It never blocks, never rewrites, and exits silently on any failure.
+
+```sh
+./hooks/resolve.py --explain "make the parser also handle tabs"   # /u  <- "make X also handle Y"
+./hooks/resolve.py --list                                         # every phrase, ranked
+```
+
+Turn it on by copying the block in
+[`hooks/settings.example.json`](hooks/settings.example.json) into `~/.claude/settings.json`.
+
+```json
+{ "hooks": { "UserPromptSubmit": [ { "hooks": [
+  { "type": "command", "command": "~/promptalias/hooks/resolve.py", "timeout": 5 }
+] } ] } }
+```
+
+Add your own wording to `hooks/vocabulary.json`, which outranks anything lifted from a
+`description`. A lone capital stands for whatever you actually say:
+
+```json
+{ "prompts": { "u": ["make X also handle Y", "wire X up to Y"] } }
+```
+
+Two things to know before you turn it on. **It is one tool wide.** Codex and Cursor expose
+no equivalent, so a phrase that only works through the hook does not travel — which is the
+property that killed the compiler in the first place, given up on purpose here. Widen the
+`description` first; it costs nothing and works in all three. And **it advises, it does not
+decide** — the agent still chooses whether to run the prompt the hook names.
+
 ## License
 
 [MIT](LICENSE).
