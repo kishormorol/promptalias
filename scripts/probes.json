@@ -1,0 +1,29 @@
+{
+  "comment": "Sentences nobody copied out of a description, with the prompt each should select. Hand-written expectations, checked by scripts/check_phrasings.py, so rewording a description that breaks real routing fails CI. null means the hook should stay silent.",
+  "probes": [
+    {"prompt": "make the parser also handle tabs", "expect": "u"},
+    {"prompt": "add retry logic to the uploader", "expect": "u"},
+    {"prompt": "update the README while keeping the tests green", "expect": "u"},
+    {"prompt": "build me a CLI for this", "expect": "n"},
+    {"prompt": "I need something that watches the log", "expect": "n"},
+    {"prompt": "write tests for the resolver", "expect": "t"},
+    {"prompt": "cover the parser with tests", "expect": "t"},
+    {"prompt": "this crashes when the file is empty", "expect": "d"},
+    {"prompt": "why is the cache broken", "expect": "d"},
+    {"prompt": "fix this error in the loader", "expect": "d"},
+    {"prompt": "does this look right to you", "expect": "rv"},
+    {"prompt": "did I break anything with that change", "expect": "rv"},
+    {"prompt": "any bugs here", "expect": "rv"},
+    {"prompt": "explain the hook to me", "expect": "ex"},
+    {"prompt": "walk me through resolve.py", "expect": "ex"},
+    {"prompt": "what's the best way to cache these results", "expect": "p"},
+    {"prompt": "plan the migration to v2", "expect": "p"},
+    {"prompt": "what would it take to support Windows", "expect": "p"},
+    {"prompt": "what is the weather today", "expect": null},
+    {"prompt": "thanks, that worked", "expect": null},
+    {"prompt": "commit this and push", "expect": null},
+    {"prompt": "deploy to production", "expect": null},
+    {"prompt": "rename this variable", "expect": null},
+    {"prompt": "/rv", "expect": null}
+  ]
+}

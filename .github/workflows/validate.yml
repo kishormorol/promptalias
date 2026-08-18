@@ -18,5 +18,11 @@ jobs:
       - name: Validate every prompt folder
         run: ./scripts/validate.py --strict
 
-      - name: Test the validator
+      - name: Test the validator and the resolver
         run: python3 -m unittest discover -s scripts -p "test_*.py" -v
+
+      - name: Phrasings and probes resolve as recorded
+        run: ./scripts/check_phrasings.py
+
+      - name: docs/phrasings.md is current
+        run: ./scripts/check_phrasings.py --check

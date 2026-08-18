@@ -120,14 +120,17 @@ yourself.
 - Keep bodies short enough to read in one screen. If a prompt needs more than that, it
   probably wants to be a real skill with reference files, not a shorthand.
 
-## Validate
+## Checks
 
 ```sh
-./scripts/validate.py            # errors fail, warnings print
-./scripts/validate.py --strict   # warnings fail too
+./scripts/validate.py                        # errors fail, warnings print
+./scripts/validate.py --strict               # warnings fail too
+python3 -m unittest discover -s scripts      # tests for the validator and the hook
+./scripts/check_phrasings.py                 # do the phrasings select their own prompt?
+./scripts/check_phrasings.py --record        # rewrite docs/phrasings.md
 ```
 
-Python 3, no dependencies. It runs on every push via
+Python 3, no dependencies, all four run on every push via
 [`.github/workflows/validate.yml`](.github/workflows/validate.yml).
 
 It checks the conventions above, and one thing you cannot otherwise catch: a
@@ -135,6 +138,13 @@ It checks the conventions above, and one thing you cannot otherwise catch: a
 `npx skills list`, and then never auto-invokes — nothing anywhere reports it as broken.
 It also catches a `name` that drifted from its folder, missing or malformed frontmatter,
 a folder with no `SKILL.md`, and frontmatter with an empty body.
+
+`check_phrasings.py` answers a different question: whether two prompts claim the same
+words. It runs every quoted example, and every sentence in
+[`scripts/probes.json`](scripts/probes.json), back through the hook below, and fails if
+one lands on the wrong prompt or ties. Results are recorded in
+[`docs/phrasings.md`](docs/phrasings.md). It measures the hook, not the agent — see that
+page for what stays unmeasured.
 
 ## Your own wording (Claude Code only)
 
