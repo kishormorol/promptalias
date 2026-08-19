@@ -607,6 +607,12 @@ Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followe
   }
 
   async function play(token) {
+    // Wait for a real frame before blanking anything. A tab that has not painted yet —
+    // opened in the background, restored, prerendered — delivers no frames, and clearing
+    // first leaves that visitor looking at an empty box instead of the transcript that is
+    // sitting right there in the HTML.
+    await frame();
+    if (token !== run) return;
     clear();
     for (var i = 0; i < lines.length; i++) {
       if (token !== run) return;
