@@ -125,7 +125,9 @@ yourself. How well the clause actually carries is measured in
 
 ## Conventions
 
-- Folder name = trigger. Short and lowercase.
+- Folder name = trigger. Short and lowercase — and note that these land in a *global*
+  skills directory, so `/d` and `/p` are claims on names nothing else may take. Rename a
+  folder if you install something that wants the same letter; the trigger follows the folder.
 - `name` in frontmatter matches the folder name.
 - `$ARGUMENTS` for everything after the trigger; `$1`–`$9` for positional args.
 - Keep bodies short enough to read in one screen. If a prompt needs more than that, it
