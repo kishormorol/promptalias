@@ -180,6 +180,42 @@ class ValidatorTest(unittest.TestCase):
         self.vocabulary({"prompts": {"gone": ["do the thing"]}})
         self.assertFails("not a prompt folder")
 
+    # Phrasings in other languages. The matcher splits on whitespace, so a script
+    # that does not use spaces can never match; one that does works untouched.
+
+    def test_vocabulary_accepts_a_script_that_uses_spaces(self):
+        self.prompt("x")
+        self.vocabulary({"prompts": {"x": ["X কেন কাজ করছে না", "añade pruebas para X",
+                                           "напиши скрипт который Y"]}})
+        self.assertOk("--strict")
+
+    def test_vocabulary_rejects_a_script_without_spaces(self):
+        self.prompt("x")
+        self.vocabulary({"prompts": {"x": ["Xの仕組みを教えて"]}})
+        out = self.assertFails("can never fire")
+        self.assertIn("Japanese kana", out)
+
+    def test_vocabulary_rejects_han_and_thai_too(self):
+        self.prompt("x")
+        self.vocabulary({"prompts": {"x": ["解释一下X"]}})
+        self.assertIn("Han", self.assertFails("can never fire"))
+        self.vocabulary({"prompts": {"x": ["Xはどう動くの"]}})
+        self.assertFails("can never fire")
+
+    def test_description_example_without_spaces_warns_but_does_not_fail(self):
+        # The agent reads the description itself, so this is worth keeping and
+        # worth flagging — only the hook is blind to it.
+        self.prompt("x", GOOD.replace("Use when the user asks for the thing.",
+                                      'Use when the user says "Xの仕組みを教えて".'))
+        out = self.assertOk()
+        self.assertIn("the hook will not back it up", out)
+        self.assertFails("the hook will not back it up", "--strict")
+
+    def test_description_example_in_a_spaced_script_is_silent(self):
+        self.prompt("x", GOOD.replace("Use when the user asks for the thing.",
+                                      'Use when the user says "X কেন কাজ করছে না".'))
+        self.assertOk("--strict")
+
     def test_vocabulary_must_be_json(self):
         self.prompt("x")
         self.vocabulary("{not json")

@@ -16,12 +16,46 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "hooks"))
+
+import resolve as resolver  # noqa: E402
 
 # Directories at the repo root that are not prompts.
 NOT_PROMPTS = {"docs", "hooks", "scripts", "node_modules"}
 
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 USE_WHEN_RE = re.compile(r"\buse when\b", re.IGNORECASE)
+
+# Scripts written without spaces between words. hooks/resolve.py splits a phrasing
+# on whitespace and guards the result with (?<!\w) ... (?!\w), so it matches only
+# where the phrase stands clear of the words around it — which in these scripts is
+# never. Measured: "Xの仕組みを教えて" does not select its prompt from the sentence
+# "resolve.pyの仕組みを教えて". A phrasing here is not a typo, it simply cannot fire.
+NO_SPACE_SCRIPTS = (
+    (0x0E00, 0x0E7F, "Thai"),
+    (0x0E80, 0x0EFF, "Lao"),
+    (0x1000, 0x109F, "Burmese"),
+    (0x1780, 0x17FF, "Khmer"),
+    (0x3040, 0x30FF, "Japanese kana"),
+    (0x3400, 0x4DBF, "Han"),
+    (0x4E00, 0x9FFF, "Han"),
+    (0xF900, 0xFAFF, "Han"),
+    (0xFF66, 0xFF9D, "half-width kana"),
+)
+
+
+def no_space_script(phrase):
+    """The script this phrasing is written in, if the hook cannot match it."""
+    for char in phrase:
+        for low, high, script in NO_SPACE_SCRIPTS:
+            if low <= ord(char) <= high:
+                return script
+    return None
+
+
+def examples(description):
+    """The quoted phrasings inside a description, as the hook reads them."""
+    return [straight or curly for straight, curly in resolver.QUOTED_RE.findall(description)]
 
 # Agent Skills frontmatter limits.
 MAX_NAME = 64
@@ -121,6 +155,17 @@ def check_prompt(folder, report):
                 "`description` has no \"Use when\" clause, so this prompt will never "
                 "auto-invoke — it will only work if you type the trigger yourself",
             )
+        for example in examples(description):
+            script = no_space_script(example)
+            if script:
+                # A warning, not an error: the agent reads the whole description and
+                # may well match this. It is only the hook that cannot.
+                report.warn(
+                    where,
+                    f'example "{example}" is {script}, which is written without spaces, '
+                    "so hooks/resolve.py can never match it — the agent still reads it, "
+                    "but on Claude Code the hook will not back it up",
+                )
 
     if body is not None and not any(line.strip() for line in body):
         report.error(where, "frontmatter but no body — nothing to prompt with")
@@ -156,6 +201,19 @@ def check_vocabulary(root, triggers, report):
             report.error(where, f"{trigger!r}: phrases must be a list of strings")
         elif not phrases:
             report.warn(where, f"{trigger!r}: empty phrase list adds nothing")
+        else:
+            for phrase in phrases:
+                script = no_space_script(phrase)
+                if script:
+                    # Nothing but the hook ever reads this file, so a phrasing the
+                    # hook cannot match is dead on arrival rather than merely weaker.
+                    report.error(
+                        where,
+                        f'{trigger!r}: "{phrase}" is {script}, which is written without '
+                        "spaces between words. The matcher only matches a phrase standing "
+                        "clear of the words around it, so this can never fire. Put it in "
+                        "the description instead, where the agent will read it",
+                    )
 
 
 def parse_args(argv):
