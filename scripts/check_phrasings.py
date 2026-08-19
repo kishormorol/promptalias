@@ -80,6 +80,29 @@ def check_phrases(phrases):
     return results
 
 
+def check_vocabulary(phrases):
+    """Does each of your own phrases still buy something a `description` cannot?
+
+    The hook is Claude Code only, so every phrase in vocabulary.json is wording
+    that does not travel to Codex or Cursor. A phrase the descriptions already
+    resolve on their own is therefore worse than useless: it costs portability
+    and buys nothing. Widening the `description` is free and works in all three.
+    """
+    from_descriptions = [p for p in phrases if p.source != "vocabulary"]
+    results = []
+    for phrase in phrases:
+        if phrase.source != "vocabulary":
+            continue
+        trigger, matched, _rivals = resolver.resolve(fill(phrase.text), from_descriptions)
+        if trigger == phrase.trigger:
+            results.append((phrase.trigger, phrase.text, matched.text, "redundant",
+                            f'the descriptions already reach /{trigger} on "{matched.text}"'))
+        else:
+            landed = f"/{trigger}" if trigger else "nothing"
+            results.append((phrase.trigger, phrase.text, landed, "ok", ""))
+    return results
+
+
 def check_probes(phrases):
     """Sentences written from scratch must route where the file says."""
     data = json.loads(PROBES.read_text(encoding="utf-8"))
@@ -92,7 +115,7 @@ def check_probes(phrases):
     return results
 
 
-def render(phrase_results, probe_results):
+def render(phrase_results, probe_results, vocab_results=()):
     by_trigger = {}
     for trigger, text, source, verdict, detail in phrase_results:
         by_trigger.setdefault(trigger, []).append((text, source, verdict, detail))
@@ -146,6 +169,22 @@ def render(phrase_results, probe_results):
 
     lines += [
         "",
+        "## What the hook buys that a description does not",
+        "",
+        "`hooks/vocabulary.json` is Claude Code only, so every phrase in it is wording",
+        "that does not travel. Each one is re-run here against the descriptions alone.",
+        "A phrase the descriptions already catch is a portability cost with nothing on",
+        "the other side of it — widen the `description` and delete the phrase.",
+        "",
+        "| Prompt | Your phrasing | Descriptions alone | Verdict |",
+        "| --- | --- | --- | --- |",
+    ]
+    for trigger, text, landed, verdict, detail in vocab_results:
+        mark = "earns it ✅" if verdict == "ok" else f"{verdict} ⚠️ {detail}"
+        lines.append(f'| `/{trigger}` | "{text}" | {landed} | {mark} |')
+
+    lines += [
+        "",
         "## Reading a failure",
         "",
         "- **ambiguous** — two prompts claim the same words equally well. The hook stays",
@@ -154,6 +193,9 @@ def render(phrase_results, probe_results):
         "  should have gone unanswered fired something.",
         "- **missed** — the example is too literal for a real sentence to match. Loosen",
         "  it, or add how you actually say it to `hooks/vocabulary.json`.",
+        "- **redundant** — a phrase in `hooks/vocabulary.json` that the descriptions",
+        "  already resolve without the hook. It costs Codex and Cursor the wording and",
+        "  returns nothing. Delete it.",
         "",
         "## What is still not measured",
         "",
@@ -178,9 +220,10 @@ def main():
     phrases = resolver.load_phrases()
     phrase_results = check_phrases(phrases)
     probe_results = check_probes(phrases)
+    vocab_results = check_vocabulary(phrases)
 
     args = sys.argv[1:]
-    page = render(phrase_results, probe_results)
+    page = render(phrase_results, probe_results, vocab_results)
 
     if "--record" in args:
         DOC.write_text(page, encoding="utf-8")
@@ -192,16 +235,17 @@ def main():
                   "run ./scripts/check_phrasings.py --record")
             return 1
 
-    failures = [r for r in phrase_results + probe_results if r[3] != "ok"]
+    failures = [r for r in phrase_results + probe_results + vocab_results if r[3] != "ok"]
     for first, second, _source, verdict, detail in failures:
         subject = f"/{first}" if first else "silence"
         print(f'{verdict:<9} {subject:<8} "{second}" — {detail}')
 
-    total = len(phrase_results) + len(probe_results)
+    total = len(phrase_results) + len(probe_results) + len(vocab_results)
     if failures:
-        print(f"\n{len(failures)} of {total} phrasings and probes do not resolve as recorded")
+        print(f"\n{len(failures)} of {total} phrasings, probes, and own phrases did not hold")
         return 1
     print(f"ok  {len(phrase_results)} phrasings and {len(probe_results)} probes resolve as recorded")
+    print(f"ok  {len(vocab_results)} of your own phrases still reach where no description does")
     return 0
 
 

@@ -159,6 +159,14 @@ one lands on the wrong prompt or ties. Results are recorded in
 [`docs/phrasings.md`](docs/phrasings.md). It measures the hook, not the agent — see that
 page for what stays unmeasured.
 
+It also answers a question the hook raises about itself. Every phrase in
+[`hooks/vocabulary.json`](hooks/vocabulary.json) is wording that reaches Claude Code and
+nowhere else, so a phrase the descriptions already resolve is a portability cost that buys
+nothing. Each one is re-run against the descriptions alone, and one that lands on its own
+prompt without the hook fails as **redundant** — widen the `description`, which is free and
+works in all three tools, and delete the phrase. Every phrase in there currently earns
+its keep.
+
 `check_page.py` guards the one thing nothing else can see rotting: [`docs/index.html`](docs/index.html)
 is served publicly and states counts and routing outcomes. Add a prompt, rename a probe, or gain a
 test, and it would keep telling visitors the old number. So the counts and every routing row on it
