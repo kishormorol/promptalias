@@ -14,10 +14,17 @@ This costs real money and real time, and the model is not deterministic, so it
 is never run in CI. Run it by hand, and treat a pass as evidence rather than
 proof.
 
-    ./scripts/measure_invocation.py            # run every case
-    ./scripts/measure_invocation.py --record   # also rewrite docs/auto-invocation.md
+    ./scripts/measure_invocation.py                      # run every case, once each
+    ./scripts/measure_invocation.py --record             # also rewrite docs/auto-invocation.md
+    ./scripts/measure_invocation.py --only resolver -n 5  # one sentence five times, as a rate
+
+A single run says what happened once. When a sentence starts behaving unevenly,
+--only narrows to it and --repeat runs it enough times to tell an outlier from a
+change. Only a full pass of one run each may be recorded, because that is the
+shape of the table in the doc.
 """
 
+import argparse
 import json
 import shutil
 import subprocess
@@ -96,7 +103,7 @@ def record(results, path=DOC):
         "| Sentence | Expected | What happened | Other tools it used |",
         "| --- | --- | --- | --- |",
     ]
-    for prompt, expect, mark, detail, tools in results:
+    for prompt, expect, mark, detail, tools, *_ in results:
         want = f"`/{expect}`" if expect else "*nothing*"
         symbol = "✅" if mark == "ok" else "⚠️"
         lines.append(f"| {prompt} | {want} | {detail} {symbol} | {', '.join(tools) or '—'} |")
@@ -123,12 +130,42 @@ def record(results, path=DOC):
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def main():
+def parse_args(argv):
+    parser = argparse.ArgumentParser(
+        description="Does the agent invoke these prompts on its own, without being told to?")
+    parser.add_argument("--record", action="store_true",
+                        help="rewrite docs/auto-invocation.md from this run")
+    parser.add_argument("--repeat", "-n", type=int, default=1, metavar="N",
+                        help="run each case N times and report how often it held")
+    parser.add_argument("--only", metavar="TEXT",
+                        help="only the cases whose sentence contains TEXT")
+    args = parser.parse_args(argv)
+    if args.repeat < 1:
+        parser.error("--repeat needs a positive number of runs")
+    if args.record and (args.repeat != 1 or args.only):
+        parser.error("--record writes the whole table from one run each, "
+                     "so it cannot be combined with --repeat or --only")
+    return args
+
+
+def select(cases, only):
+    if not only:
+        return cases
+    needle = only.lower()
+    return [case for case in cases if needle in case["prompt"].lower()]
+
+
+def main(argv=None):
+    args = parse_args(sys.argv[1:] if argv is None else argv)
+
     if not shutil.which("claude"):
         print("the claude CLI is not on PATH, so nothing can be measured")
         return 1
 
-    cases = json.loads(CASES.read_text())["cases"]
+    cases = select(json.loads(CASES.read_text())["cases"], args.only)
+    if not cases:
+        print(f"no case's sentence contains {args.only!r}")
+        return 1
     results = []
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -139,21 +176,29 @@ def main():
 
         for case in cases:
             prompt, expect = case["prompt"], case["expect"]
-            skill, tools = run_case(prompt, workdir, settings)
-            mark, detail = verdict(expect, skill)
-            results.append((prompt, expect, mark, detail, tools))
             want = f"/{expect}" if expect else "silence"
-            print(f"{mark:<7} {want:<8} {prompt!r} — {detail}")
+            attempts = []
+            for i in range(args.repeat):
+                skill, tools = run_case(prompt, workdir, settings)
+                mark, detail = verdict(expect, skill)
+                attempts.append((mark, detail, tools))
+                run = f"run {i + 1}: " if args.repeat > 1 else ""
+                print(f"{run}{mark:<7} {want:<8} {prompt!r} — {detail}", flush=True)
+            held = sum(1 for mark, _, _ in attempts if mark == "ok")
+            if args.repeat > 1:
+                print(f"         {want} on {prompt!r}: {held} of {args.repeat}")
+            results.append((prompt, expect, *attempts[0], held, args.repeat))
 
-    if "--record" in sys.argv[1:]:
+    if args.record:
         record(results)
         print(f"\nwrote {DOC.relative_to(REPO)}")
 
-    failed = [r for r in results if r[2] != "ok"]
-    if failed:
-        print(f"\n{len(failed)} of {len(results)} cases did not behave as expected")
+    held = sum(r[5] for r in results)
+    runs = sum(r[6] for r in results)
+    if held < runs:
+        print(f"\n{runs - held} of {runs} runs did not behave as expected")
         return 1
-    print(f"\nok  {len(results)} of {len(results)} cases behaved as expected")
+    print(f"\nok  {runs} of {runs} runs behaved as expected")
     return 0
 
 
