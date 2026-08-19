@@ -160,6 +160,35 @@
   .term div { white-space: pre; }
   .term div + .sp { height: 10px; }
 
+  .clip { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+          overflow: hidden; margin: 0 0 8px; }
+  .clip-bar { display: flex; align-items: center; gap: 7px; padding: 9px 14px;
+              background: var(--panel); border-bottom: 1px solid var(--line); }
+  .clip-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+  .clip-name { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint);
+               letter-spacing: 0.04em; margin-left: 4px; }
+  .clip-replay { margin-left: auto; font-family: var(--mono); font-size: 11.5px;
+                 color: var(--ink-soft); background: none; border: 1px solid var(--line-strong);
+                 border-radius: 999px; padding: 2px 11px; cursor: pointer; line-height: 1.5; }
+  .clip-replay:hover { color: var(--accent); border-color: var(--accent); }
+  .clip-body { padding: 16px 18px; overflow-x: auto; font-family: var(--mono);
+               font-size: 13.5px; line-height: 1.7; }
+  .clip-body .l { white-space: pre; min-height: 1.7em; }
+  .clip-body .p { color: var(--ink-faint); }
+  .clip-body .cmd .tx { color: var(--ink); }
+  .clip-body .out .tx { color: var(--ok); }
+  .clip-body .json .tx { color: var(--ink-soft); }
+  .clip-body .quiet .tx { color: var(--ink-faint); }
+  .clip-body .note-l .tx { color: var(--accent); }
+  .c-arrow { font-family: var(--mono); color: var(--accent); }
+  .clip-body .car { display: none; width: 7px; height: 1.05em; margin-bottom: -0.18em;
+                    background: var(--accent); }
+  .clip-body .typing .car { display: inline-block; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .clip-body .car { display: none !important; }
+  }
+
   footer { padding: 48px 0 72px; color: var(--ink-faint); font-size: 14px; }
   footer a { color: var(--ink-soft); }
 </style>
@@ -295,6 +324,37 @@ Keep existing tests passing.
       </svg>
       <figcaption>The hook never blocks, never rewrites, and exits silently on any failure — the
         worst it can do is fail to suggest something.</figcaption>
+    </figure>
+    <p>What that looks like from a terminal. Path 1 needs nothing shown here — the agent reads the
+      descriptions itself. Path 2 is the hook, and this is the whole of it: it prints the prompt it
+      matched, hands the agent one line of context, and says nothing when nothing fits.</p>
+    <figure>
+      <div class="clip">
+        <div class="clip-bar"><i></i><i></i><i></i><span class="clip-name">hooks/resolve.py</span>
+          <button class="clip-replay" type="button" data-replay hidden>replay</button></div>
+        <div class="clip-body" data-clip>
+          <div class="l cmd"><span class="p">$ </span><span class="tx">./hooks/resolve.py --explain "why is the resolver broken"</span><span class="car"></span></div>
+          <div class="l out"><span class="tx">/d  &lt;- "why is X broken" (description)</span></div>
+          <div class="l sp"><span class="tx"> </span></div>
+          <div class="l cmd"><span class="p">$ </span><span class="tx">./hooks/resolve.py --explain "eyeball this"</span><span class="car"></span></div>
+          <div class="l out"><span class="tx">/rv  &lt;- "eyeball this" (vocabulary)</span></div>
+          <div class="l note-l"><span class="tx">     &#8592; your own wording, and it outranks the descriptions</span></div>
+          <div class="l sp"><span class="tx"> </span></div>
+          <div class="l cmd"><span class="p">$ </span><span class="tx">echo '{"prompt":"why is the resolver broken"}' | ./hooks/resolve.py</span><span class="car"></span></div>
+          <div class="l json"><span class="tx">{"hookSpecificOutput": {"hookEventName": "UserPromptSubmit",</span></div>
+          <div class="l json"><span class="tx"> "additionalContext": "The user's wording matches the /d prompt</span></div>
+          <div class="l json"><span class="tx"> (on \"why is X broken\"). Invoke the d skill unless it plainly</span></div>
+          <div class="l json"><span class="tx"> does not fit this request."}}</span></div>
+          <div class="l note-l"><span class="tx">     &#8592; one line appended. Nothing blocked, nothing rewritten.</span></div>
+          <div class="l sp"><span class="tx"> </span></div>
+          <div class="l cmd"><span class="p">$ </span><span class="tx">./hooks/resolve.py --explain "deploy to production"</span><span class="car"></span></div>
+          <div class="l quiet"><span class="tx">no match</span></div>
+        </div>
+      </div>
+      <figcaption>Real output from those four commands, not a mock-up: the only edits are the
+        long JSON line wrapped to fit, and the two <span class="c-arrow">&#8592;</span> notes, which
+        the hook does not print. The silence on the last one is the designed outcome, not a
+        failure.</figcaption>
     </figure>
     <div class="split">
       <div class="lane">
@@ -520,6 +580,85 @@ Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followe
     </p>
   </div>
 </footer>
+
+<script>
+// Replays the terminal clip above. The transcript is already in the DOM, so with
+// JS off — or with reduced motion asked for — the page still shows all of it.
+(function () {
+  var clip = document.querySelector('[data-clip]');
+  if (!clip) return;
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (still.matches) return;
+
+  var lines = [].map.call(clip.querySelectorAll('.l'), function (el) {
+    var tx = el.querySelector('.tx');
+    return { el: el, tx: tx, text: tx.textContent, typed: el.classList.contains('cmd') };
+  });
+  var button = document.querySelector('[data-replay]');
+  // `run` is the epoch. Every start bumps it, so an older pass sees token !== run and
+  // bails out mid-line rather than fighting its replacement for the same lines.
+  var run = 0;
+
+  var wait = function (ms) { return new Promise(function (go) { setTimeout(go, ms); }); };
+  var frame = function () { return new Promise(function (go) { requestAnimationFrame(go); }); };
+
+  function clear() {
+    lines.forEach(function (line) { line.tx.textContent = ''; line.el.classList.remove('typing'); });
+  }
+
+  async function play(token) {
+    clear();
+    for (var i = 0; i < lines.length; i++) {
+      if (token !== run) return;
+      var line = lines[i];
+      if (line.typed) {
+        // Position from elapsed time rather than counting ticks. Timers are clamped and
+        // frames are throttled in a tab that is not focused, so anything per-tick drags
+        // one line out for a minute; from a clock, a rare frame just draws a longer jump
+        // and the line still takes the second or so it should.
+        line.el.classList.add('typing');
+        var start = performance.now(), c = 0;
+        while (c < line.text.length) {
+          await frame();
+          if (token !== run) return;
+          c = Math.min(line.text.length, Math.ceil((performance.now() - start) / 16));
+          line.tx.textContent = line.text.slice(0, c);
+        }
+        line.el.classList.remove('typing');
+        await wait(280);
+      } else {
+        line.tx.textContent = line.text;
+        await wait(line.text.trim() ? 130 : 60);
+      }
+    }
+  }
+
+  async function loop() {
+    var token = ++run;
+    while (token === run) {
+      await play(token);
+      if (token !== run) break;
+      await wait(4200);
+    }
+  }
+
+  if (button) {
+    button.hidden = false;
+    button.addEventListener('click', function () { loop(); });
+  }
+
+  // No visibility bookkeeping: frames stop on their own when the tab is hidden, which is
+  // the only saving an observer here would buy, and watching for it was enough to make the
+  // clip restart from zero every time the browser changed its mind about what is on screen.
+  loop();
+
+  still.addEventListener('change', function (e) {
+    if (!e.matches) return;
+    run++;
+    lines.forEach(function (line) { line.tx.textContent = line.text; line.el.classList.remove('typing'); });
+  });
+})();
+</script>
 
 </body>
 </html>
