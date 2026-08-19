@@ -1,0 +1,12 @@
+{
+  "comment": "Rates, for sentences run more than once. The table in docs/auto-invocation.md is one session per row, which says what happened once and not how often. When a sentence starts behaving unevenly, ./scripts/measure_invocation.py --only TEXT -n N --record adds it here. Written by that script; the prose that cites it is generated from these numbers.",
+  "runs": [
+    {
+      "prompt": "why is the resolver broken",
+      "expect": "d",
+      "runs": 7,
+      "outcomes": {"/d": 6, "nothing": 1},
+      "measured": "17-18 August 2026"
+    }
+  ]
+}

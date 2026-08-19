@@ -553,12 +553,12 @@ Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followe
 <section id="checks">
   <div class="wrap">
     <h2>Kept honest by</h2>
-    <h3>Five checks, on every push</h3>
+    <h3>Six checks, on every push</h3>
     <ul>
       <li><code>validate.py --strict</code> — every prompt is a well-formed skill, and no
         description is missing its <strong>Use when</strong> clause.</li>
-      <li><code>unittest</code> — 51 tests across the validator and the resolver, most of them on
-        the hook’s silences.</li>
+      <li><code>unittest</code> — 64 tests across the validator, the resolver, and the numbers
+        these pages quote, most of them on the hook’s silences.</li>
       <li><code>check_phrasings.py</code> — 77 phrasings and 24 probes still select the prompts
         that claim them.</li>
       <li><code>check_phrasings.py --check</code> — the published results page has not gone
@@ -566,8 +566,11 @@ Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followe
       <li><code>check_page.py</code> — this page still states the counts and routing outcomes the
         repo actually has. It is the only file here that talks to people who cannot see the repo,
         so it is the one that rots unnoticed.</li>
+      <li><code>measure_invocation.py --check</code> — every rate quoted here and in the notes
+        still matches <code>scripts/repeat_runs.json</code>, the file the repeated runs were
+        written to. It measures nothing itself; it opens files, so it is free to run.</li>
     </ul>
-    <p>Python 3, no dependencies, nothing to install. The same five commands run locally.</p>
+    <p>Python 3, no dependencies, nothing to install. The same six commands run locally.</p>
   </div>
 </section>
 

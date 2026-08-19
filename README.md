@@ -136,13 +136,14 @@ yourself. How well the clause actually carries is measured in
 ```sh
 ./scripts/validate.py                        # errors fail, warnings print
 ./scripts/validate.py --strict               # warnings fail too
-python3 -m unittest discover -s scripts      # tests for the validator and the hook
+python3 -m unittest discover -s scripts      # the validator, the hook, and the rates
 ./scripts/check_phrasings.py                 # do the phrasings select their own prompt?
 ./scripts/check_phrasings.py --record        # rewrite docs/phrasings.md
 ./scripts/check_page.py                      # does the published page still tell the truth?
+./scripts/measure_invocation.py --check      # do the docs still match the measured rates?
 ```
 
-Python 3, no dependencies, all five run on every push via
+Python 3, no dependencies, six of them run on every push via
 [`.github/workflows/validate.yml`](.github/workflows/validate.yml).
 
 It checks the conventions above, and one thing you cannot otherwise catch: a
@@ -171,7 +172,8 @@ separately, by hand:
 
 ```sh
 ./scripts/measure_invocation.py                       # every case, once each
-./scripts/measure_invocation.py --only resolver -n 7  # one sentence seven times, as a rate
+./scripts/measure_invocation.py --only resolver -n 7 --record   # keep that as a rate
+./scripts/measure_invocation.py --check               # free: docs against the recorded rates
 ```
 
 It stays out of CI because every row is a real billed session and the model is not
@@ -179,8 +181,12 @@ deterministic. Nine ordinary sentences, **hooks disabled** so the hook could not
 answer it was being compared against: seven asked for a prompt and got it, two asked for
 neither and got silence. One session each is not a rate, though, and the one sentence since
 run repeatedly shows why — *why is the resolver broken* reached for `/d` six times out of
-seven, and once reached for nothing at all. Every row, and the four things it still does not
-settle, are in [`docs/auto-invocation.md`](docs/auto-invocation.md).
+seven, and once reached for nothing at all. That rate lives in
+[`scripts/repeat_runs.json`](scripts/repeat_runs.json) as numbers, and every sentence quoting
+it — in the notes and on the published page — is generated or checked from that file, so the
+one claim here most likely to go stale is the one thing CI will not let drift. Every row, and
+the four things it still does not settle, are in
+[`docs/auto-invocation.md`](docs/auto-invocation.md).
 
 ## Your own wording (Claude Code only)
 

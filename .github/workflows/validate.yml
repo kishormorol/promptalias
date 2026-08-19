@@ -29,3 +29,6 @@ jobs:
 
       - name: The published page still matches the repo
         run: ./scripts/check_page.py
+
+      - name: The measured rates still match what the docs claim
+        run: ./scripts/measure_invocation.py --check

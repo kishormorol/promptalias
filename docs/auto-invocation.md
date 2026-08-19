@@ -9,7 +9,9 @@ be read from outside. This measures what none of them can: whether Claude Code's
 own matching picks the prompt out of an ordinary sentence. **Hooks are disabled**
 for these runs, so the hook cannot hand over the answer it is being compared to.
 
-9 of 9 cases behaved as expected, at up to 3 turns each.
+**Every row below is one session.** 9 of 9 behaved as expected, at up to 3
+turns each — but a session is a coin, not a rate. Read the table as nine coins
+that came up heads, and the rate under it as what one row is actually worth.
 
 | Sentence | Expected | What happened | Other tools it used |
 | --- | --- | --- | --- |
@@ -25,10 +27,11 @@ for these runs, so the hook cannot hand over the answer it is being compared to.
 
 ## What this still does not settle
 
-- **One run each.** The same sentence can go differently on another day; nothing
-  here is a rate. The one sentence measured repeatedly — *why is the resolver
-  broken*, seven runs across 17-18 August — invoked `/d` six times and nothing
-  once. Read every row above as that kind of coin, not as a settled answer.
+- **One run each.** The same sentence can go differently on another day;
+  nothing here is a rate. The one sentence since run repeatedly says what that
+  costs: *why is the resolver broken* reached for `/d` six times out of seven,
+  and nothing once (17-18 August 2026). Read every row above as that kind of
+  coin, not as a settled answer.
 - **Non-interactive sessions.** `claude -p` is not the same context as typing into
   a live session, where the surrounding conversation is doing work too.
 - **Written by the same hand as the descriptions.** Sentences someone else writes,
