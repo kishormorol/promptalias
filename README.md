@@ -120,7 +120,8 @@ Body of the prompt. $ARGUMENTS interpolates whatever followed the trigger.
 One rule that matters more than the rest: **write `description` as "do X. Use when Y."**
 The `Use when` clause is what the agent matches on to fire the skill implicitly. A bare
 label like `"Update a feature"` will never auto-invoke — it only works if you type `/u`
-yourself.
+yourself. How well the clause actually carries is measured in
+[`docs/auto-invocation.md`](docs/auto-invocation.md).
 
 ## Conventions
 
@@ -161,6 +162,25 @@ page for what stays unmeasured.
 is served publicly and states counts and routing outcomes. Add a prompt, rename a probe, or gain a
 test, and it would keep telling visitors the old number. So the counts and every routing row on it
 are checked against the repo on each push.
+
+### The half no push can check
+
+Everything above measures the hook, because a regex's decision can be read from outside.
+Whether the *agent* reaches for a prompt on its own — hook off, nothing typed — is measured
+separately, by hand:
+
+```sh
+./scripts/measure_invocation.py                       # every case, once each
+./scripts/measure_invocation.py --only resolver -n 7  # one sentence seven times, as a rate
+```
+
+It stays out of CI because every row is a real billed session and the model is not
+deterministic. Nine ordinary sentences, **hooks disabled** so the hook could not supply the
+answer it was being compared against: seven asked for a prompt and got it, two asked for
+neither and got silence. One session each is not a rate, though, and the one sentence since
+run repeatedly shows why — *why is the resolver broken* reached for `/d` six times out of
+seven, and once reached for nothing at all. Every row, and the four things it still does not
+settle, are in [`docs/auto-invocation.md`](docs/auto-invocation.md).
 
 ## Your own wording (Claude Code only)
 
