@@ -133,5 +133,17 @@ class HookContractTest(unittest.TestCase):
         self.assertIn("[vocabulary]", out)
 
 
+class InstalledTest(unittest.TestCase):
+    def test_only_linked_prompts_count_as_installed(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as project:
+            skill = Path(project) / ".claude" / "skills" / "zz-linked"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text("---\nname: zz-linked\n---\n", encoding="utf-8")
+            self.assertTrue(resolver.installed("zz-linked", project))
+            self.assertFalse(resolver.installed("zz-not-linked", project))
+            self.assertFalse(resolver.installed("zz-linked", None))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

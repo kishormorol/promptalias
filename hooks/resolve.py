@@ -13,6 +13,9 @@ Phrases come from two places:
     agent already matches on, so the hook and the descriptions cannot drift;
   * `hooks/vocabulary.json`, your own wording, which outranks the above.
 
+Only prompts linked into `~/.claude/skills` or the project's `.claude/skills` are
+suggested: unlink one and the hook stops naming it.
+
 What it does not do: block, rewrite, or invoke anything. It appends one line of
 context naming the prompt it matched. Any failure exits silently — a broken
 hook must never cost you a turn.
@@ -121,6 +124,18 @@ def load_phrases(root=REPO):
     return [p for p in phrases if p.regex]
 
 
+def installed(trigger, cwd=None):
+    """True when Claude Code can actually load this prompt as a skill.
+
+    The hook tells the agent to invoke a skill, so naming one that is not linked
+    into a skills directory sends it after something that is not there.
+    """
+    roots = [Path.home() / ".claude" / "skills"]
+    if cwd:
+        roots.append(Path(cwd) / ".claude" / "skills")
+    return any((root / trigger / "SKILL.md").is_file() for root in roots)
+
+
 def resolve(prompt, phrases=None):
     """Return (trigger, phrase, rivals). trigger is None when nothing wins."""
     phrases = load_phrases() if phrases is None else phrases
@@ -176,7 +191,9 @@ def main():
 
     try:
         payload = json.load(sys.stdin)
-        trigger, phrase, rivals = resolve(payload.get("prompt", ""))
+        cwd = payload.get("cwd")
+        phrases = [p for p in load_phrases() if installed(p.trigger, cwd)]
+        trigger, phrase, rivals = resolve(payload.get("prompt", ""), phrases)
         if not trigger:
             return 0
         print(json.dumps({"hookSpecificOutput": {
