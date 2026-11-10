@@ -29,6 +29,8 @@
     {"prompt": "write a regression test for the resolver", "expect": "write-tests"},
     {"prompt": "plan how to add retry logic to the uploader", "expect": "plan-approach"},
     {"prompt": "what would it take to make the parser also handle tabs", "expect": "plan-approach"},
+    {"prompt": "can you plan how to add retry logic to the uploader", "expect": "plan-approach"},
+    {"prompt": "I need something that can track down flaky tests", "expect": "build-new"},
     {"prompt": "what is the weather today", "expect": null},
     {"prompt": "thanks, that worked", "expect": null},
     {"prompt": "commit this and push", "expect": null},

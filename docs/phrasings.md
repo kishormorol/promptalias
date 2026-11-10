@@ -9,7 +9,7 @@ implicit matching fires on these words happens inside the model, where nothing
 here can see it. A row marked ok is unambiguous to the hook; it is not proof
 that typing it invokes anything.
 
-83 listed phrasings and 34 probe sentences, 0 failing.
+83 listed phrasings and 36 probe sentences, 0 failing.
 
 ## Probes — sentences nobody copied out of a description
 
@@ -47,6 +47,8 @@ The honest half of this page. Each is written from scratch in
 | write a regression test for the resolver | `/write-tests` | "write a X test for Y" | ok ✅ |
 | plan how to add retry logic to the uploader | `/plan-approach` | "plan X" | ok ✅ |
 | what would it take to make the parser also handle tabs | `/plan-approach` | "what would it take to X" | ok ✅ |
+| can you plan how to add retry logic to the uploader | `/plan-approach` | "plan X" | ok ✅ |
+| I need something that can track down flaky tests | `/build-new` | "I need something that Y" | ok ✅ |
 | what is the weather today | *silence* | — | ok ✅ |
 | thanks, that worked | *silence* | — | ok ✅ |
 | commit this and push | *silence* | — | ok ✅ |

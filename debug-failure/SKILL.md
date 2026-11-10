@@ -22,12 +22,13 @@ Debug this: $ARGUMENTS. If that is empty, work from the user's last message.
    logging you added, report the cause and the fix you would make, and apply it when
    they ask.
 4. Unless an existing test already fails on this bug, write a test that reproduces
-   the failure and watch it fail. If no test can express
-   it (a build, a config, an environment), say so and keep the failing output.
+   the failure and watch it fail. If no test can express it (a build, a config, an
+   environment), or the project has no test setup, say so and keep the failing output.
 5. Fix the cause, not the symptom. Silencing the error, widening a catch, or
    hard-coding the reported input is not a fix. Handling a boundary the code should
    always have handled is. Never get to green by weakening, skipping or deleting a
-   failing test; if the test itself is wrong, show why and change only that assertion.
+   failing test; if the test itself is wrong, show why and change only the part of it that is
+   wrong (setup, call or assertion).
 6. Run the new test, then the whole suite, and remove any logging you added. Where no
    test expresses the failure, run the command from step 1 again and show its output
    now; if that command must not be run again, say the fix is unverified against the

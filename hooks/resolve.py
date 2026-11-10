@@ -37,7 +37,15 @@ QUOTED_RE = re.compile(r'"([^"]{3,})"|“([^”]{3,})”')
 
 # A lone capital in an example stands for whatever the user actually says:
 # "make X also do Y".
-PLACEHOLDER_RE = re.compile(r"^[A-Z]$")
+PLACEHOLDER_RE = re.compile(r"^[A-HJ-Z]$")   # not "I": in "how should I X" it is the pronoun
+
+# Words people put in front of a request without changing it. They are skipped when deciding
+# whether a phrasing opens the sentence: "can you plan how to X" opens with "plan".
+LEAD_INS = (r"(?:(?:please|pls|hey|hi|ok|okay|so|now|and|also|then|can you|could you|would you|will you|"
+            r"can we|could we|let's|lets|i want you to|i need you to|i'd like you to|help me|go ahead and)\W+)*")
+
+# A long pasted document quotes phrasings by accident. Only its opening is the request.
+HEAD_CHARS = 400
 
 # Your own wording is deliberate, so it beats a phrase lifted from a description.
 VOCABULARY_BONUS = 1000
@@ -54,7 +62,7 @@ class Phrase:
         first = text.split()[0] if text.split() else "X"
         self.lead = None
         if self.regex and not PLACEHOLDER_RE.match(first.strip(".,!?;:")):
-            self.lead = re.compile(r"\A\W*" + self.regex.pattern[len(r"(?<!\w)"):], re.IGNORECASE)
+            self.lead = re.compile(r"\A\W*" + LEAD_INS + self.regex.pattern[len(r"(?<!\w)"):], re.IGNORECASE)
         # Longer, more specific phrasings win; placeholders count for nothing.
         self.weight = len(re.sub(r"\s+", " ", strip_placeholders(text)))
         if source == "vocabulary":
@@ -149,6 +157,7 @@ def resolve(prompt, phrases=None):
         # An explicit slash command is already a choice; do not second-guess it.
         return None, None, []
 
+    prompt = prompt[:HEAD_CHARS]
     hits = [p for p in phrases if p.regex.search(prompt)]
     if not hits:
         return None, None, []
