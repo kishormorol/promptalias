@@ -9,7 +9,7 @@ implicit matching fires on these words happens inside the model, where nothing
 here can see it. A row marked ok is unambiguous to the hook; it is not proof
 that typing it invokes anything.
 
-77 listed phrasings and 24 probe sentences, 0 failing.
+82 listed phrasings and 29 probe sentences, 0 failing.
 
 ## Probes — sentences nobody copied out of a description
 
@@ -37,6 +37,11 @@ The honest half of this page. Each is written from scratch in
 | what's the best way to cache these results | `/plan-approach` | "what's the best way to Y" | ok ✅ |
 | plan the migration to v2 | `/plan-approach` | "plan X" | ok ✅ |
 | what would it take to support Windows | `/plan-approach` | "what would it take to X" | ok ✅ |
+| write a plan for the migration | `/plan-approach` | "write a plan for X" | ok ✅ |
+| plan how to change how the parser works | `/plan-approach` | "plan how to change how X works" | ok ✅ |
+| how should I fix this error | `/plan-approach` | "how should I fix this error" | ok ✅ |
+| write a test for the resolver | `/write-tests` | "write a test for X" | ok ✅ |
+| add tests to the uploader | `/write-tests` | "add tests to X" | ok ✅ |
 | what is the weather today | *silence* | — | ok ✅ |
 | thanks, that worked | *silence* | — | ok ✅ |
 | commit this and push | *silence* | — | ok ✅ |
@@ -83,6 +88,7 @@ sentences. This catches two prompts claiming the same words.
 | `/explain-code` | "give me the tour of X" | vocabulary | ok ✅ |
 | `/plan-approach` | "how should I X" | description | ok ✅ |
 | `/plan-approach` | "plan X" | description | ok ✅ |
+| `/plan-approach` | "write a plan for X" | description | ok ✅ |
 | `/plan-approach` | "what's the best way to Y" | description | ok ✅ |
 | `/plan-approach` | "design X" | description | ok ✅ |
 | `/plan-approach` | "think through X before coding" | description | ok ✅ |
@@ -90,6 +96,8 @@ sentences. This catches two prompts claiming the same words.
 | `/plan-approach` | "what would it take to X" | description | ok ✅ |
 | `/plan-approach` | "sketch out X" | vocabulary | ok ✅ |
 | `/plan-approach` | "how would you approach X" | vocabulary | ok ✅ |
+| `/plan-approach` | "plan how to change how X works" | vocabulary | ok ✅ |
+| `/plan-approach` | "how should I fix this error" | vocabulary | ok ✅ |
 | `/review-diff` | "review this" | description | ok ✅ |
 | `/review-diff` | "review the last diff" | description | ok ✅ |
 | `/review-diff` | "check my changes" | description | ok ✅ |
@@ -122,6 +130,8 @@ sentences. This catches two prompts claiming the same words.
 | `/update-feature` | "have X do Y as well" | vocabulary | ok ✅ |
 | `/update-feature` | "wire X up to Y" | vocabulary | ok ✅ |
 | `/write-tests` | "write tests for X" | description | ok ✅ |
+| `/write-tests` | "write a test for X" | description | ok ✅ |
+| `/write-tests` | "add tests to X" | description | ok ✅ |
 | `/write-tests` | "add test coverage" | description | ok ✅ |
 | `/write-tests` | "test this" | description | ok ✅ |
 | `/write-tests` | "cover X with tests" | description | ok ✅ |
@@ -147,6 +157,8 @@ the other side of it — widen the `description` and delete the phrase.
 | `/explain-code` | "give me the tour of X" | nothing | earns it ✅ |
 | `/plan-approach` | "sketch out X" | nothing | earns it ✅ |
 | `/plan-approach` | "how would you approach X" | nothing | earns it ✅ |
+| `/plan-approach` | "plan how to change how X works" | /update-feature | earns it ✅ |
+| `/plan-approach` | "how should I fix this error" | /debug-failure | earns it ✅ |
 | `/review-diff` | "eyeball this" | nothing | earns it ✅ |
 | `/review-diff` | "poke holes in this" | nothing | earns it ✅ |
 | `/update-feature` | "make X also handle Y" | nothing | earns it ✅ |

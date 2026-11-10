@@ -142,6 +142,12 @@ class ValidatorTest(unittest.TestCase):
         self.assertIn("convention is one screen", self.assertOk())
         self.assertFails("--strict", "--strict")
 
+    def test_model_must_be_a_full_id(self):
+        self.prompt("x", GOOD.replace("name: x", "name: x\nmodel: claude-opus-5-5"))
+        self.assertOk()
+        self.prompt("x", GOOD.replace("name: x", "name: x\nmodel: Opus"))
+        self.assertFails("is not a model ID")
+
     def test_long_trigger_warns(self):
         long = "averylongtrigger"
         self.prompt(long, GOOD.replace("name: x", f"name: {long}"))

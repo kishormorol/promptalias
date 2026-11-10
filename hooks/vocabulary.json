@@ -8,6 +8,6 @@
     "write-tests": ["pin X down with tests"],
     "debug-failure": ["track down X", "what's up with X"],
     "explain-code": ["what is this doing", "give me the tour of X"],
-    "plan-approach": ["sketch out X", "how would you approach X"]
+    "plan-approach": ["sketch out X", "how would you approach X", "plan how to change how X works", "how should I fix this error"]
   }
 }

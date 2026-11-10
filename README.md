@@ -134,6 +134,12 @@ yourself. How well the clause actually carries is measured in
   not. Rename a folder if you install something that wants the same name; the trigger follows the
   folder.
 - `name` in frontmatter matches the folder name.
+- `model` in frontmatter pins the model a prompt runs on, by the kind of work: planning on the
+  strongest model (`/plan-approach`: `claude-fable-5-2`), building, changing, debugging and
+  reviewing on `claude-opus-5-5`, and the lighter jobs, writing tests and explaining code, on
+  `claude-sonnet-5-5`. Only Claude Code reads the field; Codex and Cursor ignore it and use
+  whatever model you have selected there. Use a full model ID, not an alias, and delete the line
+  to run a prompt on your current model. `validate.py` checks its form, not that the model exists.
 - `$ARGUMENTS` for everything after the trigger; `$1`–`$9` for positional args.
 - Keep bodies short enough to read in one screen. If a prompt needs more than that, it
   probably wants to be a real skill with reference files, not a shorthand.

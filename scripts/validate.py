@@ -25,6 +25,7 @@ NOT_PROMPTS = {"docs", "hooks", "scripts", "node_modules"}
 
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 USE_WHEN_RE = re.compile(r"\buse when\b", re.IGNORECASE)
+MODEL_RE = re.compile(r"^[a-z0-9]+([.-][a-z0-9]+)+$")   # a full ID such as claude-opus-5-5, never an alias
 
 # Scripts written without spaces between words. hooks/resolve.py splits a phrasing
 # on whitespace and guards the result with (?<!\w) ... (?!\w), so it matches only
@@ -142,6 +143,10 @@ def check_prompt(folder, report):
             report.error(where, f"`name` is {len(name)} chars, limit is {MAX_NAME}")
         if not NAME_RE.match(name):
             report.error(where, f"`name: {name}` must be lowercase letters, digits, and single hyphens")
+
+    model = fields.get("model")
+    if model is not None and not MODEL_RE.match(model):
+        report.error(where, f"`model: {model}` is not a model ID: lowercase letters, digits, dots and hyphens")
 
     description = fields.get("description")
     if not description:

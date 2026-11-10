@@ -1,27 +1,34 @@
 ---
 name: update-feature
-description: Update an existing feature while keeping its tests green. Use when the user asks to change, extend, modify, or adjust behaviour that already exists and already has tests — phrasings like "update the X", "make X also do Y", "change how X works", "add Y to X", "tweak X", "X should also handle Y", "make X do Y instead", "extend X to cover Y", "adjust X so that Y", "rework X", "X needs to also do Y", "can you make X do Y", "while keeping the tests green". Use it for any request to alter code that already works, rather than to write something new.
+description: Update an existing feature while keeping its tests green. Use when the user asks to change, extend, modify, or adjust behaviour that already exists — phrasings like "update the X", "make X also do Y", "change how X works", "add Y to X", "tweak X", "X should also handle Y", "make X do Y instead", "extend X to cover Y", "adjust X so that Y", "rework X", "X needs to also do Y", "can you make X do Y", "while keeping the tests green". Use it for any request to change what existing code does, rather than to write something new. Not for renames, formatting or docs-only edits.
 model: claude-opus-5-5
 ---
 
 # Update a feature
 
-Update this feature: $ARGUMENTS.
+Update this feature: $ARGUMENTS. If that is empty, work from the user's last message.
 
-Keep existing tests passing.
+Keep the tests for behaviour you are not changing passing.
 
 ## How to work
 
 1. Find the feature and read it before changing anything. Read its tests too — they
-   are the specification you must not break.
-2. Make the smallest change that delivers the request. Match the surrounding code's
+   are the specification you must not break. If it has no tests, say so, and first pin
+   the behaviour you are about to rely on with a test or two (with no test setup at
+   all, record a before-and-after run), so the change is checked against something.
+2. Run the feature's tests before you change anything, and note any that already fail.
+   Those are not yours to fix here: report them.
+3. Make the smallest change that delivers the request. Match the surrounding code's
    naming, comment density, and idiom.
-3. Run the existing tests. If any fail, fix the code — do not edit a test to make it
-   pass unless the request itself changed the expected behaviour, and say so explicitly
-   if you do.
-4. If the change needs new behaviour that isn't covered, add a test for it alongside.
+4. If the change adds behaviour that isn't covered, add a test for it alongside.
+5. Run the feature's tests again, then the whole suite, on the final code and tests.
+   Fix the failures you caused. Do not edit a test to make it pass unless the request
+   itself changes the behaviour that test asserts; then change only those assertions,
+   and never delete or skip a test.
 
 ## Report back
 
-State what changed, which tests you ran, and their result. If tests failed and you
-could not fix them, say so with the output rather than reporting success.
+State what changed, the exact test command and its summary line (passed, failed,
+skipped), and every test you edited, with its old and new expectation. List failures
+that were there before you started separately. If tests failed and you could not fix
+them, or could not be run, say so with the output rather than reporting success.
