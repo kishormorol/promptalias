@@ -237,9 +237,9 @@ npx skills add kishormorol/promptalias --global --all</code></pre>
   <div class="wrap">
     <h2>The unit</h2>
     <h3>A prompt is a folder with one file in it</h3>
-    <p>The folder name is the trigger, so <code>u/</code> gives you <code>/u</code>. Everything
+    <p>The folder name is the trigger, so <code>u/</code> gives you <code>/update-feature</code>. Everything
       that decides whether the prompt fires lives in two lines of frontmatter.</p>
-<pre><code><span class="c-dim">u/SKILL.md</span>
+<pre><code><span class="c-dim">update-feature/SKILL.md</span>
 ---
 <span class="c-key">name</span>: u
 <span class="c-key">description</span>: Update an existing feature while keeping its tests green.
@@ -265,16 +265,16 @@ Keep existing tests passing.
   <div class="wrap">
     <h2>The set</h2>
     <h3>Seven prompts, split by what they are allowed to touch</h3>
-    <p><code>/n</code> and <code>/u</code> divide on whether the thing exists yet.
-      <code>/ex</code> and <code>/p</code> are the two that write no code at all.</p>
+    <p><code>/build-new</code> and <code>/update-feature</code> divide on whether the thing exists yet.
+      <code>/explain-code</code> and <code>/plan-approach</code> are the two that write no code at all.</p>
     <div class="grid">
-      <div class="card"><div class="trig">/n</div><div class="does">Build something new that isn’t there yet, with tests</div><div class="says">“build me a X”</div></div>
-      <div class="card"><div class="trig">/u</div><div class="does">Update a feature, keeping its tests green</div><div class="says">“make X also do Y”</div></div>
-      <div class="card"><div class="trig">/t</div><div class="does">Write tests for code that already works</div><div class="says">“cover X with tests”</div></div>
-      <div class="card"><div class="trig">/d</div><div class="does">Track a failure to its root cause and fix it</div><div class="says">“why is X broken”</div></div>
-      <div class="card"><div class="trig">/rv</div><div class="does">Review the last diff for correctness, security, performance</div><div class="says">“did I break anything”</div></div>
-      <div class="card"><div class="trig">/ex</div><div class="does">Explain existing code, changing nothing</div><div class="says">“walk me through X”</div></div>
-      <div class="card"><div class="trig">/p</div><div class="does">Plan an approach before any code is written</div><div class="says">“what would it take to X”</div></div>
+      <div class="card"><div class="trig">/build-new</div><div class="does">Build something new that isn’t there yet, with tests</div><div class="says">“build me a X”</div></div>
+      <div class="card"><div class="trig">/update-feature</div><div class="does">Update a feature, keeping its tests green</div><div class="says">“make X also do Y”</div></div>
+      <div class="card"><div class="trig">/write-tests</div><div class="does">Write tests for code that already works</div><div class="says">“cover X with tests”</div></div>
+      <div class="card"><div class="trig">/debug-failure</div><div class="does">Track a failure to its root cause and fix it</div><div class="says">“why is X broken”</div></div>
+      <div class="card"><div class="trig">/review-diff</div><div class="does">Review the last diff for correctness, security, performance</div><div class="says">“did I break anything”</div></div>
+      <div class="card"><div class="trig">/explain-code</div><div class="does">Explain existing code, changing nothing</div><div class="says">“walk me through X”</div></div>
+      <div class="card"><div class="trig">/plan-approach</div><div class="does">Plan an approach before any code is written</div><div class="says">“what would it take to X”</div></div>
     </div>
   </div>
 </section>
@@ -311,7 +311,7 @@ Keep existing tests passing.
         <path class="s-line-a" d="M520 226 H562 V150 H600" marker-end="url(#aa)"/>
 
         <rect class="s-box" x="600" y="128" width="218" height="44" rx="9"/>
-        <text class="s-tm" x="622" y="156"><tspan class="s-ta">/d</tspan> runs</text>
+        <text class="s-tm" x="622" y="156"><tspan class="s-ta">/debug-failure</tspan> runs</text>
 
         <defs>
           <marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
@@ -334,15 +334,15 @@ Keep existing tests passing.
           <button class="clip-replay" type="button" data-replay hidden>replay</button></div>
         <div class="clip-body" data-clip>
           <div class="l cmd"><span class="p">$ </span><span class="tx">./hooks/resolve.py --explain "why is the resolver broken"</span><span class="car"></span></div>
-          <div class="l out"><span class="tx">/d  &lt;- "why is X broken" (description)</span></div>
+          <div class="l out"><span class="tx">/debug-failure  &lt;- "why is X broken" (description)</span></div>
           <div class="l sp"><span class="tx"> </span></div>
           <div class="l cmd"><span class="p">$ </span><span class="tx">./hooks/resolve.py --explain "eyeball this"</span><span class="car"></span></div>
-          <div class="l out"><span class="tx">/rv  &lt;- "eyeball this" (vocabulary)</span></div>
+          <div class="l out"><span class="tx">/review-diff  &lt;- "eyeball this" (vocabulary)</span></div>
           <div class="l note-l"><span class="tx">     &#8592; your own wording, and it outranks the descriptions</span></div>
           <div class="l sp"><span class="tx"> </span></div>
           <div class="l cmd"><span class="p">$ </span><span class="tx">echo '{"prompt":"why is the resolver broken"}' | ./hooks/resolve.py</span><span class="car"></span></div>
           <div class="l json"><span class="tx">{"hookSpecificOutput": {"hookEventName": "UserPromptSubmit",</span></div>
-          <div class="l json"><span class="tx"> "additionalContext": "The user's wording matches the /d prompt</span></div>
+          <div class="l json"><span class="tx"> "additionalContext": "The user's wording matches the /debug-failure prompt</span></div>
           <div class="l json"><span class="tx"> (on \"why is X broken\"). Invoke the d skill unless it plainly</span></div>
           <div class="l json"><span class="tx"> does not fit this request."}}</span></div>
           <div class="l note-l"><span class="tx">     &#8592; one line appended. Nothing blocked, nothing rewritten.</span></div>
@@ -386,18 +386,18 @@ Keep existing tests passing.
       <table>
         <thead><tr><th>What you type</th><th>Matched on</th><th>Runs</th></tr></thead>
         <tbody>
-          <tr><td class="said">make the parser also handle tabs</td><td><span class="m">“make X also handle Y”</span></td><td><span class="trig">/u</span></td></tr>
-          <tr><td class="said">I need something that watches the log</td><td><span class="m">“I need something that Y”</span></td><td><span class="trig">/n</span></td></tr>
-          <tr><td class="said">cover the parser with tests</td><td><span class="m">“cover X with tests”</span></td><td><span class="trig">/t</span></td></tr>
-          <tr><td class="said">why is the cache broken</td><td><span class="m">“why is X broken”</span></td><td><span class="trig">/d</span></td></tr>
-          <tr><td class="said">did I break anything with that change</td><td><span class="m">“did I break anything”</span></td><td><span class="trig">/rv</span></td></tr>
-          <tr><td class="said">walk me through resolve.py</td><td><span class="m">“walk me through X”</span></td><td><span class="trig">/ex</span></td></tr>
-          <tr><td class="said">what would it take to support Windows</td><td><span class="m">“what would it take to X”</span></td><td><span class="trig">/p</span></td></tr>
+          <tr><td class="said">make the parser also handle tabs</td><td><span class="m">“make X also handle Y”</span></td><td><span class="trig">/update-feature</span></td></tr>
+          <tr><td class="said">I need something that watches the log</td><td><span class="m">“I need something that Y”</span></td><td><span class="trig">/build-new</span></td></tr>
+          <tr><td class="said">cover the parser with tests</td><td><span class="m">“cover X with tests”</span></td><td><span class="trig">/write-tests</span></td></tr>
+          <tr><td class="said">why is the cache broken</td><td><span class="m">“why is X broken”</span></td><td><span class="trig">/debug-failure</span></td></tr>
+          <tr><td class="said">did I break anything with that change</td><td><span class="m">“did I break anything”</span></td><td><span class="trig">/review-diff</span></td></tr>
+          <tr><td class="said">walk me through resolve.py</td><td><span class="m">“walk me through X”</span></td><td><span class="trig">/explain-code</span></td></tr>
+          <tr><td class="said">what would it take to support Windows</td><td><span class="m">“what would it take to X”</span></td><td><span class="trig">/plan-approach</span></td></tr>
           <tr><td class="said">deploy to production</td><td><span class="m c-dim">—</span></td><td><span class="silent">silence</span></td></tr>
         </tbody>
       </table>
     </div>
-    <p>The first row is the interesting one. <code>/u</code>’s description lists
+    <p>The first row is the interesting one. <code>/update-feature</code>’s description lists
       <em>“make X also do Y”</em>, which does not match <em>“also handle tabs”</em> — exactly the
       kind of miss the hook’s <code>vocabulary.json</code> exists to close.</p>
   </div>
@@ -415,7 +415,7 @@ Keep existing tests passing.
       disabled</strong> so the hook could not supply the answer it was being compared against.
       Seven asked for a prompt and got it; two asked for neither and got silence.</p>
     <p>One session each is not a rate, and the one sentence since run repeatedly shows why:
-      <em>“why is the resolver broken”</em> reached for <code>/d</code> six times out of seven,
+      <em>“why is the resolver broken”</em> reached for <code>/debug-failure</code> six times out of seven,
       and once reached for nothing at all. The same words, the same descriptions, a different
       day.</p>
     <p>So it is evidence, not proof — non-interactive sessions, written by
@@ -438,14 +438,14 @@ Keep existing tests passing.
     <figure>
       <svg viewBox="0 0 820 210" role="img" aria-label="The repository is symlinked into the agents hub, which is symlinked into the Claude Code, Codex, and Cursor skills directories.">
         <rect class="s-box-a" x="1" y="76" width="196" height="58" rx="9"/>
-        <text class="s-tm" x="22" y="101">~/promptalias/u</text>
+        <text class="s-tm" x="22" y="101">~/promptalias/update-feature</text>
         <text class="s-td" x="22" y="120">the only real copy</text>
 
         <path class="s-line-a" d="M197 105 H286" marker-end="url(#aa2)"/>
         <text class="s-td" x="206" y="97">symlink</text>
 
         <rect class="s-box" x="286" y="76" width="212" height="58" rx="9"/>
-        <text class="s-tm" x="306" y="101">~/.agents/skills/u</text>
+        <text class="s-tm" x="306" y="101">~/.agents/skills/update-feature</text>
         <text class="s-td" x="306" y="120">the hub</text>
 
         <path class="s-line" d="M498 105 H556 V32 H600" marker-end="url(#a2)"/>
@@ -476,7 +476,7 @@ Keep existing tests passing.
     </figure>
 <pre><code><span class="c-dim"># every prompt, every tool, resolving to this repo</span>
 mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/skills ~/.cursor/skills-cursor
-for s in u n rv t d ex p; do
+for s in update-feature build-new review-diff write-tests debug-failure explain-code plan-approach; do
   rm -rf ~/.agents/skills/$s
   ln -s  ~/promptalias/$s          ~/.agents/skills/$s
   ln -sfn ../../.agents/skills/$s  ~/.claude/skills/$s
@@ -509,10 +509,10 @@ done</code></pre>
     <p>Ask it what it would do with a sentence before trusting it with one:</p>
     <div class="term">
       <div><span class="p">$</span> <span class="cmd">./hooks/resolve.py --explain "make the parser also handle tabs"</span></div>
-      <div><span class="out">/u  &lt;- "make X also handle Y" (vocabulary)</span></div>
+      <div><span class="out">/update-feature  &lt;- "make X also handle Y" (vocabulary)</span></div>
       <div class="sp"></div>
       <div><span class="p">$</span> <span class="cmd">./hooks/resolve.py --explain "sanity check this before I push"</span></div>
-      <div><span class="out">/rv  &lt;- "sanity check this" (description)</span></div>
+      <div><span class="out">/review-diff  &lt;- "sanity check this" (description)</span></div>
       <div class="sp"></div>
       <div><span class="p">$</span> <span class="cmd">./hooks/resolve.py --explain "what is the weather today"</span></div>
       <div><span class="quiet">no match</span></div>
@@ -526,7 +526,7 @@ done</code></pre>
   <div class="wrap">
     <h2>Add your own</h2>
     <h3>A folder, a file, and one rule that matters</h3>
-    <p>The folder name is the trigger, so keep it short. Bodies stay readable in one screen; if a
+    <p>The folder name is the trigger, so keep it to two short words. Bodies stay readable in one screen; if a
       prompt needs more than that, it wants to be a real skill with reference files.</p>
 <pre><code>mkdir mytrigger &amp;&amp; $EDITOR mytrigger/SKILL.md</code></pre>
 <pre><code>---
@@ -557,7 +557,7 @@ Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followe
     <ul>
       <li><code>validate.py --strict</code> — every prompt is a well-formed skill, and no
         description is missing its <strong>Use when</strong> clause.</li>
-      <li><code>unittest</code> — 67 tests across the validator, the resolver, and the numbers
+      <li><code>unittest</code> — 68 tests across the validator, the resolver, and the numbers
         these pages quote, most of them on the hook’s silences.</li>
       <li><code>check_phrasings.py</code> — 77 phrasings and 24 probes still select the prompts
         that claim them.</li>

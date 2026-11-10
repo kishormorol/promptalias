@@ -26,7 +26,7 @@ class VocabularyEarnsItsKeep(unittest.TestCase):
         self.assertEqual(redundant, [], "widen the description and drop the phrase")
 
     def test_a_phrase_lifted_from_a_description_is_reported(self):
-        lifted = resolver.Phrase("u", "while keeping the tests green", "vocabulary")
+        lifted = resolver.Phrase("update-feature", "while keeping the tests green", "vocabulary")
         results = checker.check_vocabulary(self.phrases + [lifted])
         verdicts = {(r[1], r[3]) for r in results}
         self.assertIn(("while keeping the tests green", "redundant"), verdicts)

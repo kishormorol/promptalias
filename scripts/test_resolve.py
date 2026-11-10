@@ -10,6 +10,7 @@ never fails loudly enough to cost you a turn.
 
 import json
 import subprocess
+import tempfile
 import sys
 import unittest
 from pathlib import Path
@@ -89,7 +90,7 @@ class MatchingTest(unittest.TestCase):
 
 class DescriptionTest(unittest.TestCase):
     def test_folded_description_is_read_whole(self):
-        skill = Path(REPO / "u" / "SKILL.md")
+        skill = Path(REPO / "update-feature" / "SKILL.md")
         self.assertIn("Use when", resolver.read_description(skill))
 
     def test_every_prompt_in_this_repo_contributes_phrases(self):
@@ -108,11 +109,18 @@ class HookContractTest(unittest.TestCase):
         return result.returncode, result.stdout
 
     def test_match_emits_useprompt_context(self):
-        code, out = self.run_hook(json.dumps({"prompt": "write tests for the resolver"}))
+        # The hook names only prompts linked as skills. A fresh checkout (CI) has none
+        # linked in ~/.claude/skills, so link one into a project of its own.
+        with tempfile.TemporaryDirectory() as project:
+            skills = Path(project) / ".claude" / "skills"
+            skills.mkdir(parents=True)
+            (skills / "write-tests").symlink_to(REPO / "write-tests")
+            code, out = self.run_hook(json.dumps({"prompt": "write tests for the resolver",
+                                                  "cwd": project}))
         self.assertEqual(code, 0)
         payload = json.loads(out)["hookSpecificOutput"]
         self.assertEqual(payload["hookEventName"], "UserPromptSubmit")
-        self.assertIn("/t", payload["additionalContext"])
+        self.assertIn("/write-tests", payload["additionalContext"])
 
     def test_no_match_says_nothing(self):
         code, out = self.run_hook(json.dumps({"prompt": "what is the weather today"}))
@@ -125,7 +133,7 @@ class HookContractTest(unittest.TestCase):
 
     def test_explain_and_list_are_usable_from_the_shell(self):
         code, out = self.run_hook("", "--explain", "does this look right")
-        self.assertEqual((code, out.split()[0]), (0, "/rv"))
+        self.assertEqual((code, out.split()[0]), (0, "/review-diff"))
         code, out = self.run_hook("", "--explain", "what is the weather")
         self.assertEqual((code, out.strip()), (1, "no match"))
         code, out = self.run_hook("", "--list")

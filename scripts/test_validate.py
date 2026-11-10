@@ -145,7 +145,7 @@ class ValidatorTest(unittest.TestCase):
     def test_long_trigger_warns(self):
         long = "averylongtrigger"
         self.prompt(long, GOOD.replace("name: x", f"name: {long}"))
-        self.assertIn("short triggers are the point", self.assertOk())
+        self.assertIn("keep it to two short words", self.assertOk())
 
     # What counts as a prompt folder.
 

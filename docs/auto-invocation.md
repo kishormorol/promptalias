@@ -1,6 +1,9 @@
 # Does the agent invoke these prompts on its own?
 
 **Measured by `scripts/measure_invocation.py` on 17 August 2026.**
+The prompts then had one- and two-letter names (`/u`, `/n`, `/t`, `/d`, `/rv`, `/ex`, `/p`). They were
+renamed on 10 November 2026 and the rows below show the new names. The descriptions the agent
+matches on did not change, but nothing here has been measured again since the rename.
 Not run in CI: every row is a real billed session, and the model is not
 deterministic. Re-run it by hand when the descriptions change.
 
@@ -15,13 +18,13 @@ that came up heads, and the rate under it as what one row is actually worth.
 
 | Sentence | Expected | What happened | Other tools it used |
 | --- | --- | --- | --- |
-| make the parser also handle tabs | `/u` | invoked /u ✅ | Bash, Read |
-| I need something that watches the log | `/n` | invoked /n ✅ | Bash, Read |
-| cover the validator with tests | `/t` | invoked /t ✅ | Bash, Read |
-| why is the resolver broken | `/d` | invoked /d ✅ | Bash |
-| does this look right to you | `/rv` | invoked /rv ✅ | Bash |
-| walk me through resolve.py | `/ex` | invoked /ex ✅ | Bash, Read |
-| what would it take to support Windows | `/p` | invoked /p ✅ | Bash, Read |
+| make the parser also handle tabs | `/update-feature` | invoked /update-feature ✅ | Bash, Read |
+| I need something that watches the log | `/build-new` | invoked /build-new ✅ | Bash, Read |
+| cover the validator with tests | `/write-tests` | invoked /write-tests ✅ | Bash, Read |
+| why is the resolver broken | `/debug-failure` | invoked /debug-failure ✅ | Bash |
+| does this look right to you | `/review-diff` | invoked /review-diff ✅ | Bash |
+| walk me through resolve.py | `/explain-code` | invoked /explain-code ✅ | Bash, Read |
+| what would it take to support Windows | `/plan-approach` | invoked /plan-approach ✅ | Bash, Read |
 | what is the weather today | *nothing* | stayed silent ✅ | — |
 | rename the variable on line 40 of validate.py | *nothing* | stayed silent ✅ | Bash, Read |
 
@@ -29,9 +32,9 @@ that came up heads, and the rate under it as what one row is actually worth.
 
 - **One run each.** The same sentence can go differently on another day;
   nothing here is a rate. The one sentence since run repeatedly says what that
-  costs: *why is the resolver broken* reached for `/d` six times out of seven,
-  and nothing once (17-18 August 2026). Read every row above as that kind of
-  coin, not as a settled answer.
+  costs: *why is the resolver broken* reached for `/debug-failure` six times
+  out of seven, and nothing once (17-18 August 2026). Read every row above as
+  that kind of coin, not as a settled answer.
 - **Non-interactive sessions.** `claude -p` is not the same context as typing into
   a live session, where the surrounding conversation is doing work too.
 - **Written by the same hand as the descriptions.** Sentences someone else writes,

@@ -52,7 +52,7 @@ WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "sev
          8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
 
 # "`/d` six times out of seven" — the shape of a rate wherever one is claimed.
-RATE_RE = re.compile(r"[`>]/(\w+)[`<][^.]{0,40}?(\w+) times out of (\w+)")
+RATE_RE = re.compile(r"[`>]/([\w-]+)[`<][^.]{0,40}?(\w+) times out of (\w+)")
 
 
 def first_skill(stream):

@@ -1,5 +1,5 @@
 ---
-name: n
+name: build-new
 description: Build something new that does not exist yet, with tests. Use when the user asks for code that is not there yet — "write a X", "build me a X", "create a script that Y", "I need something that Y", "implement X from scratch", "start a new X", "we need a X". Use it for any request to write something new, rather than to change something that already works.
 model: claude-opus-5-5
 ---

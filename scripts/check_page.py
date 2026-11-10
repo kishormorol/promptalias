@@ -21,7 +21,7 @@ PROBES = REPO / "scripts" / "probes.json"
 # A probe row: what you type, then either a trigger or the silence marker.
 ROW_RE = re.compile(
     r'<td class="said">([^<]+)</td>.*?'
-    r'<td>(?:<span class="trig">/(\w+)|<span class="silent">silence)',
+    r'<td>(?:<span class="trig">/([\w-]+)|<span class="silent">silence)',
     re.S)
 
 
@@ -35,7 +35,7 @@ def check(page, report):
     for trigger in triggers:
         if f">/{trigger}<" not in page:
             report.append(f"/{trigger} exists but the page never mentions it")
-    listed = set(re.findall(r'<div class="trig">/(\w+)</div>', page))
+    listed = set(re.findall(r'<div class="trig">/([\w-]+)</div>', page))
     for extra in sorted(listed - set(triggers)):
         report.append(f"the page advertises /{extra}, which is not a prompt folder")
     if f"{len(triggers)} prompts" not in page:

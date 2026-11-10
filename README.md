@@ -35,7 +35,7 @@ Two caveats worth knowing, both measured rather than assumed.
 
 **`add` copies; it does not link back here.** It writes each `SKILL.md` into a hub at
 `~/.agents/skills/<name>/` and symlinks agent directories at *the hub*. Edits to this repo
-are therefore invisible until you re-run `add`. Confirmed by editing `u/SKILL.md` and
+are therefore invisible until you re-run `add`. Confirmed by editing `update-feature/SKILL.md` and
 watching the hub not change.
 
 **`add` did not reach Codex or Cursor.** It reported success for both while writing only to
@@ -46,7 +46,7 @@ tool at the hub:
 
 ```sh
 mkdir -p ~/.agents/skills ~/.claude/skills ~/.codex/skills ~/.cursor/skills-cursor
-for s in u n rv t d ex p; do
+for s in update-feature build-new review-diff write-tests debug-failure explain-code plan-approach; do
   rm -rf ~/.agents/skills/$s
   ln -s  ~/promptalias/$s          ~/.agents/skills/$s
   ln -sfn ../../.agents/skills/$s  ~/.claude/skills/$s
@@ -66,12 +66,12 @@ All three resolve to this repo, and edits are live with no sync step:
 
 | Tool | Path | Resolves to |
 | --- | --- | --- |
-| Claude Code | `~/.claude/skills/u` | `~/promptalias/u` ✅ |
-| Codex | `~/.codex/skills/u` | `~/promptalias/u` ✅ |
-| Cursor | `~/.cursor/skills-cursor/u` | `~/promptalias/u` ✅ |
+| Claude Code | `~/.claude/skills/update-feature` | `~/promptalias/update-feature` ✅ |
+| Codex | `~/.codex/skills/update-feature` | `~/promptalias/update-feature` ✅ |
+| Cursor | `~/.cursor/skills-cursor/update-feature` | `~/promptalias/update-feature` ✅ |
 
 The tradeoff: `npx skills` no longer manages these entries, so a future `add` or `update`
-may replace the links with copies again. If `/u` stops picking up your edits, that's what
+may replace the links with copies again. If `/update-feature` stops picking up your edits, that's what
 happened — re-run the block above.
 
 ### On another machine
@@ -89,18 +89,21 @@ That also sets `Source:` to the repo rather than `local`, which is what makes
 
 | Trigger | Does |
 | --- | --- |
-| `/n` | Build something new that isn't there yet, with tests |
-| `/u` | Update an existing feature, keeping its tests green |
-| `/t` | Write tests for code that already works |
-| `/d` | Track a failure to its root cause and fix it |
-| `/rv` | Review the last diff for correctness, security, and performance |
-| `/ex` | Explain existing code, changing nothing |
-| `/p` | Plan an approach before any code is written |
+| `/build-new` | Build something new that isn't there yet, with tests |
+| `/update-feature` | Update an existing feature, keeping its tests green |
+| `/write-tests` | Write tests for code that already works |
+| `/debug-failure` | Track a failure to its root cause and fix it |
+| `/review-diff` | Review the last diff for correctness, security, and performance |
+| `/explain-code` | Explain existing code, changing nothing |
+| `/plan-approach` | Plan an approach before any code is written |
 
-`/n` and `/u` split on whether the thing exists yet; `/ex` and `/p` are the two that
+`/build-new` and `/update-feature` split on whether the thing exists yet; `/explain-code` and `/plan-approach` are the two that
 write no code at all.
 
-The folder name is the trigger, so keep folder names short — `u/` gives you `/u`.
+The folder name is the trigger: `update-feature/` gives you `/update-feature`. Until 10 November 2026
+these were one- and two-letter names (`/u`, `/n`, `/t`, `/d`, `/rv`, `/ex`, `/p`). They were renamed
+because a letter does not say what it does, and because a name as short as `/p` or `/d` is one
+another tool is likely to want.
 
 ## Adding a prompt
 
@@ -119,15 +122,17 @@ Body of the prompt. $ARGUMENTS interpolates whatever followed the trigger.
 
 One rule that matters more than the rest: **write `description` as "do X. Use when Y."**
 The `Use when` clause is what the agent matches on to fire the skill implicitly. A bare
-label like `"Update a feature"` will never auto-invoke — it only works if you type `/u`
+label like `"Update a feature"` will never auto-invoke — it only works if you type `/update-feature`
 yourself. How well the clause actually carries is measured in
 [`docs/auto-invocation.md`](docs/auto-invocation.md).
 
 ## Conventions
 
-- Folder name = trigger. Short and lowercase — and note that these land in a *global*
-  skills directory, so `/d` and `/p` are claims on names nothing else may take. Rename a
-  folder if you install something that wants the same letter; the trigger follows the folder.
+- Folder name = trigger. Two short lowercase words that say what the prompt does. These land in a
+  *global* skills directory, so every name is a claim nothing else may take: `/plan` or `/debug`
+  would collide with commands the tools ship themselves, `/plan-approach` and `/debug-failure` do
+  not. Rename a folder if you install something that wants the same name; the trigger follows the
+  folder.
 - `name` in frontmatter matches the folder name.
 - `$ARGUMENTS` for everything after the trigger; `$1`–`$9` for positional args.
 - Keep bodies short enough to read in one screen. If a prompt needs more than that, it
@@ -190,7 +195,7 @@ It stays out of CI because every row is a real billed session and the model is n
 deterministic. Nine ordinary sentences, **hooks disabled** so the hook could not supply the
 answer it was being compared against: seven asked for a prompt and got it, two asked for
 neither and got silence. One session each is not a rate, though, and the one sentence since
-run repeatedly shows why — *why is the resolver broken* reached for `/d` six times out of
+run repeatedly shows why — *why is the resolver broken* reached for `/debug-failure` six times out of
 seven, and once reached for nothing at all. That rate lives in
 [`scripts/repeat_runs.json`](scripts/repeat_runs.json) as numbers, and every sentence quoting
 it — in the notes and on the published page — is generated or checked from that file, so the
@@ -208,7 +213,7 @@ example in every `description` plus your own phrases in
 it matched. It never blocks, never rewrites, and exits silently on any failure.
 
 ```sh
-./hooks/resolve.py --explain "make the parser also handle tabs"   # /u  <- "make X also handle Y"
+./hooks/resolve.py --explain "make the parser also handle tabs"   # /update-feature  <- "make X also handle Y"
 ./hooks/resolve.py --list                                         # every phrase, ranked
 ```
 
@@ -225,7 +230,7 @@ Add your own wording to `hooks/vocabulary.json`, which outranks anything lifted 
 `description`. A lone capital stands for whatever you actually say:
 
 ```json
-{ "prompts": { "u": ["make X also handle Y", "wire X up to Y"] } }
+{ "prompts": { "update-feature": ["make X also handle Y", "wire X up to Y"] } }
 ```
 
 Two things to know before you turn it on. **It is one tool wide.** Codex and Cursor expose
