@@ -2,8 +2,9 @@
 
 **Measured by `scripts/measure_invocation.py` on 17 August 2026.**
 The prompts then had one- and two-letter names (`/u`, `/n`, `/t`, `/d`, `/rv`, `/ex`, `/p`). They were
-renamed on 10 November 2026 and the rows below show the new names. The descriptions the agent
-matches on did not change, but nothing here has been measured again since the rename.
+renamed on 10 November 2026 and the rows below show the new names. The descriptions of
+`/update-feature`, `/write-tests` and `/plan-approach` were also revised that day, and nothing here
+has been measured again since.
 Not run in CI: every row is a real billed session, and the model is not
 deterministic. Re-run it by hand when the descriptions change.
 

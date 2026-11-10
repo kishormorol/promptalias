@@ -216,7 +216,7 @@
       <span class="badge">7 prompts</span>
       <span class="badge">3 tools</span>
       <span class="badge">0 dependencies</span>
-      <span class="badge ok">101 phrasings &amp; probes measured, 0 failing</span>
+      <span class="badge ok">119 phrasings &amp; probes measured, 0 failing</span>
     </div>
     <p class="note"><strong>There is no <code>promptalias</code> command.</strong> The name comes
       from a CLI that was designed and then killed before implementation — a compiler from one
@@ -237,11 +237,11 @@ npx skills add kishormorol/promptalias --global --all</code></pre>
   <div class="wrap">
     <h2>The unit</h2>
     <h3>A prompt is a folder with one file in it</h3>
-    <p>The folder name is the trigger, so <code>u/</code> gives you <code>/update-feature</code>. Everything
+    <p>The folder name is the trigger, so <code>update-feature/</code> gives you <code>/update-feature</code>. Everything
       that decides whether the prompt fires lives in two lines of frontmatter.</p>
 <pre><code><span class="c-dim">update-feature/SKILL.md</span>
 ---
-<span class="c-key">name</span>: u
+<span class="c-key">name</span>: update-feature
 <span class="c-key">description</span>: Update an existing feature while keeping its tests green.
   <span class="c-ok">Use when</span> the user asks to change, extend, modify, or adjust behaviour
   that already exists — "update the X", "make X also do Y", "tweak X" …
@@ -249,8 +249,8 @@ npx skills add kishormorol/promptalias --global --all</code></pre>
 
 # Update a feature
 
-Update this feature: <span class="c-key">$ARGUMENTS</span>.
-Keep existing tests passing.
+Update this feature: <span class="c-key">$ARGUMENTS</span>. …
+Keep the tests for behaviour you are not changing passing.
 …</code></pre>
     <div class="anno">
       <div><span>name</span><p style="margin:0">Must match the folder. The validator fails the build if it drifts.</p></div>
@@ -343,7 +343,7 @@ Keep existing tests passing.
           <div class="l cmd"><span class="p">$ </span><span class="tx">echo '{"prompt":"why is the resolver broken"}' | ./hooks/resolve.py</span><span class="car"></span></div>
           <div class="l json"><span class="tx">{"hookSpecificOutput": {"hookEventName": "UserPromptSubmit",</span></div>
           <div class="l json"><span class="tx"> "additionalContext": "The user's wording matches the /debug-failure prompt</span></div>
-          <div class="l json"><span class="tx"> (on \"why is X broken\"). Invoke the d skill unless it plainly</span></div>
+          <div class="l json"><span class="tx"> (on \"why is X broken\"). Invoke the debug-failure skill unless it plainly</span></div>
           <div class="l json"><span class="tx"> does not fit this request."}}</span></div>
           <div class="l note-l"><span class="tx">     &#8592; one line appended. Nothing blocked, nothing rewritten.</span></div>
           <div class="l sp"><span class="tx"> </span></div>
@@ -499,12 +499,14 @@ done</code></pre>
   { <span class="c-key">"type"</span>: "command", <span class="c-key">"command"</span>: "~/promptalias/hooks/resolve.py", <span class="c-key">"timeout"</span>: 5 }
 ] } ] } }</code></pre>
     <p>Then add how you actually phrase things. A lone capital stands for whatever you really say,
-      and your own wording outranks anything lifted from a description.</p>
+      and your own wording outranks anything lifted from a description. One rule comes first: a
+      phrasing that matches the opening words of your sentence beats one that matches further in, so
+      "plan how to add retries to the uploader" is a request for a plan.</p>
 <pre><code><span class="c-dim">hooks/vocabulary.json</span>
 { <span class="c-key">"prompts"</span>: {
-    <span class="c-key">"u"</span>:  ["make X also handle Y", "wire X up to Y"],
-    <span class="c-key">"d"</span>:  ["track down X", "what's up with X"],
-    <span class="c-key">"rv"</span>: ["eyeball this", "poke holes in this"]
+    <span class="c-key">"update-feature"</span>: ["make X also handle Y", "wire X up to Y"],
+    <span class="c-key">"debug-failure"</span>:  ["track down X", "what's up with X"],
+    <span class="c-key">"review-diff"</span>:    ["eyeball this", "poke holes in this"]
 } }</code></pre>
     <p>Ask it what it would do with a sentence before trusting it with one:</p>
     <div class="term">
@@ -557,9 +559,9 @@ Body of the prompt. <span class="c-key">$ARGUMENTS</span> takes whatever followe
     <ul>
       <li><code>validate.py --strict</code> — every prompt is a well-formed skill, and no
         description is missing its <strong>Use when</strong> clause.</li>
-      <li><code>unittest</code> — 68 tests across the validator, the resolver, and the numbers
+      <li><code>unittest</code> — 74 tests across the validator, the resolver, and the numbers
         these pages quote, most of them on the hook’s silences.</li>
-      <li><code>check_phrasings.py</code> — 77 phrasings and 24 probes still select the prompts
+      <li><code>check_phrasings.py</code> — 83 phrasings and 36 probes still select the prompts
         that claim them.</li>
       <li><code>check_phrasings.py --check</code> — the published results page has not gone
         stale.</li>

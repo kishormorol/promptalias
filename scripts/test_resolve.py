@@ -83,6 +83,42 @@ class MatchingTest(unittest.TestCase):
         p = phrases(("rv", "review this", "description"))
         self.assertIsNone(resolver.resolve("/u review this", p)[0])
 
+    def test_the_opening_words_beat_a_longer_match_further_in(self):
+        p = phrases(("plan-approach", "plan X", "description"),
+                    ("update-feature", "add Y to X", "description"),
+                    ("update-feature", "make X also handle Y", "vocabulary"))
+        self.assertEqual(resolver.resolve("plan how to add retry logic to the uploader", p)[0],
+                         "plan-approach")
+        self.assertEqual(resolver.resolve("plan how to make the parser also handle tabs", p)[0],
+                         "plan-approach")
+        # With no phrasing at the start, the longest match anywhere still wins.
+        self.assertEqual(resolver.resolve("please add retry logic to the uploader", p)[0],
+                         "update-feature")
+
+    def test_a_polite_lead_in_does_not_hide_the_opening(self):
+        p = phrases(("plan-approach", "plan X", "description"),
+                    ("update-feature", "add Y to X", "description"))
+        for said in ("can you plan how to add retry logic to the uploader",
+                     "ok, please plan how to add retry logic to the uploader"):
+            self.assertEqual(resolver.resolve(said, p)[0], "plan-approach", said)
+
+    def test_the_pronoun_i_is_a_word_not_a_placeholder(self):
+        p = phrases(("build-new", "I need something that Y", "description"),
+                    ("debug-failure", "track down X", "vocabulary"))
+        self.assertEqual(resolver.resolve("I need something that can track down flaky tests", p)[0],
+                         "build-new")
+        self.assertIsNone(resolver.resolve("we need something that sorts", p)[0])
+
+    def test_a_phrasing_quoted_deep_in_a_long_paste_is_ignored(self):
+        p = phrases(("update-feature", "make X also handle Y", "vocabulary"))
+        paste = "Here is the log from last night. " * 20 + "make the parser also handle tabs"
+        self.assertIsNone(resolver.resolve(paste, p)[0])
+
+    def test_among_opening_matches_the_longer_one_wins(self):
+        p = phrases(("build-new", "write a X", "description"),
+                    ("write-tests", "write a test for X", "description"))
+        self.assertEqual(resolver.resolve("write a test for the resolver", p)[0], "write-tests")
+
     def test_empty_prompt_matches_nothing(self):
         p = phrases(("rv", "review this", "description"))
         self.assertIsNone(resolver.resolve("", p)[0])

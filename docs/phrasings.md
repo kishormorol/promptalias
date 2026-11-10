@@ -9,7 +9,7 @@ implicit matching fires on these words happens inside the model, where nothing
 here can see it. A row marked ok is unambiguous to the hook; it is not proof
 that typing it invokes anything.
 
-77 listed phrasings and 24 probe sentences, 0 failing.
+83 listed phrasings and 36 probe sentences, 0 failing.
 
 ## Probes — sentences nobody copied out of a description
 
@@ -21,7 +21,7 @@ The honest half of this page. Each is written from scratch in
 | --- | --- | --- | --- |
 | make the parser also handle tabs | `/update-feature` | "make X also handle Y" | ok ✅ |
 | add retry logic to the uploader | `/update-feature` | "add Y to X" | ok ✅ |
-| update the README while keeping the tests green | `/update-feature` | "while keeping the tests green" | ok ✅ |
+| update the parser while keeping the tests green | `/update-feature` | "update the X" | ok ✅ |
 | build me a CLI for this | `/build-new` | "build me a X" | ok ✅ |
 | I need something that watches the log | `/build-new` | "I need something that Y" | ok ✅ |
 | write tests for the resolver | `/write-tests` | "write tests for X" | ok ✅ |
@@ -37,6 +37,18 @@ The honest half of this page. Each is written from scratch in
 | what's the best way to cache these results | `/plan-approach` | "what's the best way to Y" | ok ✅ |
 | plan the migration to v2 | `/plan-approach` | "plan X" | ok ✅ |
 | what would it take to support Windows | `/plan-approach` | "what would it take to X" | ok ✅ |
+| write a plan for the migration | `/plan-approach` | "write a plan for X" | ok ✅ |
+| plan how to change how the parser works | `/plan-approach` | "plan X" | ok ✅ |
+| how should I fix this error | `/plan-approach` | "how should I X" | ok ✅ |
+| write a test for the resolver | `/write-tests` | "write a test for X" | ok ✅ |
+| add tests to the uploader | `/write-tests` | "add tests to X" | ok ✅ |
+| write a unit test for the resolver | `/write-tests` | "write a unit test for X" | ok ✅ |
+| add a test to the uploader | `/write-tests` | "add a test to X" | ok ✅ |
+| write a regression test for the resolver | `/write-tests` | "write a X test for Y" | ok ✅ |
+| plan how to add retry logic to the uploader | `/plan-approach` | "plan X" | ok ✅ |
+| what would it take to make the parser also handle tabs | `/plan-approach` | "what would it take to X" | ok ✅ |
+| can you plan how to add retry logic to the uploader | `/plan-approach` | "plan X" | ok ✅ |
+| I need something that can track down flaky tests | `/build-new` | "I need something that Y" | ok ✅ |
 | what is the weather today | *silence* | — | ok ✅ |
 | thanks, that worked | *silence* | — | ok ✅ |
 | commit this and push | *silence* | — | ok ✅ |
@@ -83,6 +95,7 @@ sentences. This catches two prompts claiming the same words.
 | `/explain-code` | "give me the tour of X" | vocabulary | ok ✅ |
 | `/plan-approach` | "how should I X" | description | ok ✅ |
 | `/plan-approach` | "plan X" | description | ok ✅ |
+| `/plan-approach` | "write a plan for X" | description | ok ✅ |
 | `/plan-approach` | "what's the best way to Y" | description | ok ✅ |
 | `/plan-approach` | "design X" | description | ok ✅ |
 | `/plan-approach` | "think through X before coding" | description | ok ✅ |
@@ -122,6 +135,11 @@ sentences. This catches two prompts claiming the same words.
 | `/update-feature` | "have X do Y as well" | vocabulary | ok ✅ |
 | `/update-feature` | "wire X up to Y" | vocabulary | ok ✅ |
 | `/write-tests` | "write tests for X" | description | ok ✅ |
+| `/write-tests` | "write a test for X" | description | ok ✅ |
+| `/write-tests` | "write a unit test for X" | description | ok ✅ |
+| `/write-tests` | "write a X test for Y" | description | ok ✅ |
+| `/write-tests` | "add tests to X" | description | ok ✅ |
+| `/write-tests` | "add a test to X" | description | ok ✅ |
 | `/write-tests` | "add test coverage" | description | ok ✅ |
 | `/write-tests` | "test this" | description | ok ✅ |
 | `/write-tests` | "cover X with tests" | description | ok ✅ |

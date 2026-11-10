@@ -37,7 +37,15 @@ QUOTED_RE = re.compile(r'"([^"]{3,})"|“([^”]{3,})”')
 
 # A lone capital in an example stands for whatever the user actually says:
 # "make X also do Y".
-PLACEHOLDER_RE = re.compile(r"^[A-Z]$")
+PLACEHOLDER_RE = re.compile(r"^[A-HJ-Z]$")   # not "I": in "how should I X" it is the pronoun
+
+# Words people put in front of a request without changing it. They are skipped when deciding
+# whether a phrasing opens the sentence: "can you plan how to X" opens with "plan".
+LEAD_INS = (r"(?:(?:please|pls|hey|hi|ok|okay|so|now|and|also|then|can you|could you|would you|will you|"
+            r"can we|could we|let's|lets|i want you to|i need you to|i'd like you to|help me|go ahead and)\W+)*")
+
+# A long pasted document quotes phrasings by accident. Only its opening is the request.
+HEAD_CHARS = 400
 
 # Your own wording is deliberate, so it beats a phrase lifted from a description.
 VOCABULARY_BONUS = 1000
@@ -49,6 +57,12 @@ class Phrase:
         self.text = text
         self.source = source
         self.regex = compile_phrase(text)
+        # The same pattern pinned to the start of the sentence. A phrasing that opens with a
+        # placeholder ("X should also handle Y") has no opening words to pin.
+        first = text.split()[0] if text.split() else "X"
+        self.lead = None
+        if self.regex and not PLACEHOLDER_RE.match(first.strip(".,!?;:")):
+            self.lead = re.compile(r"\A\W*" + LEAD_INS + self.regex.pattern[len(r"(?<!\w)"):], re.IGNORECASE)
         # Longer, more specific phrasings win; placeholders count for nothing.
         self.weight = len(re.sub(r"\s+", " ", strip_placeholders(text)))
         if source == "vocabulary":
@@ -143,13 +157,20 @@ def resolve(prompt, phrases=None):
         # An explicit slash command is already a choice; do not second-guess it.
         return None, None, []
 
+    prompt = prompt[:HEAD_CHARS]
     hits = [p for p in phrases if p.regex.search(prompt)]
     if not hits:
         return None, None, []
 
-    best = max(p.weight for p in hits)
-    winners = {p.trigger for p in hits if p.weight == best}
-    top = max((p for p in hits if p.weight == best), key=lambda p: len(p.text))
+    # The words a sentence opens with say what is being asked for: "plan how to add retry
+    # logic to the uploader" is a request for a plan, although "add Y to X" is the longer
+    # match further in. So a phrasing that matches at the start beats one that matches later,
+    # and length (with the vocabulary bonus) decides only among phrasings in the same place.
+    pool = [p for p in hits if p.lead and p.lead.match(prompt)] or hits
+
+    best = max(p.weight for p in pool)
+    winners = {p.trigger for p in pool if p.weight == best}
+    top = max((p for p in pool if p.weight == best), key=lambda p: len(p.text))
     if len(winners) > 1:
         # Two prompts match equally well. Saying so is worth more than a coin toss.
         return None, top, sorted(winners)
