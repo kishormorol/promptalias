@@ -26,6 +26,7 @@
     {"prompt": "add tests to the uploader", "expect": "write-tests"},
     {"prompt": "write a unit test for the resolver", "expect": "write-tests"},
     {"prompt": "add a test to the uploader", "expect": "write-tests"},
+    {"prompt": "write a regression test for the resolver", "expect": "write-tests"},
     {"prompt": "plan how to add retry logic to the uploader", "expect": "plan-approach"},
     {"prompt": "what would it take to make the parser also handle tabs", "expect": "plan-approach"},
     {"prompt": "what is the weather today", "expect": null},

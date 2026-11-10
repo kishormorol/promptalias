@@ -26,7 +26,9 @@ changes in behaviour.
 4. If the change adds behaviour that isn't covered, add a test for it alongside.
 5. Run the feature's tests again, then the whole suite, on the final code and tests.
    Fix the failures you caused; for a failure outside the feature's tests, check
-   whether it fails without your change before treating it as yours. Do not edit a test
+   whether it fails without your change before treating it as yours: undo your edit by
+   hand or read the diff, never `git checkout`, `git restore` or `git stash`, which
+   throw away uncommitted work. If you cannot tell, report it as unattributed. Do not edit a test
    to make it pass unless the request itself changes what that test exercises; then
    change only the setup, calls and assertions the request makes necessary. Never skip
    a test, and delete one only when the request removes the behaviour it asserts.

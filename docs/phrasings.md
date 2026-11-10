@@ -9,7 +9,7 @@ implicit matching fires on these words happens inside the model, where nothing
 here can see it. A row marked ok is unambiguous to the hook; it is not proof
 that typing it invokes anything.
 
-82 listed phrasings and 33 probe sentences, 0 failing.
+83 listed phrasings and 34 probe sentences, 0 failing.
 
 ## Probes — sentences nobody copied out of a description
 
@@ -44,6 +44,7 @@ The honest half of this page. Each is written from scratch in
 | add tests to the uploader | `/write-tests` | "add tests to X" | ok ✅ |
 | write a unit test for the resolver | `/write-tests` | "write a unit test for X" | ok ✅ |
 | add a test to the uploader | `/write-tests` | "add a test to X" | ok ✅ |
+| write a regression test for the resolver | `/write-tests` | "write a X test for Y" | ok ✅ |
 | plan how to add retry logic to the uploader | `/plan-approach` | "plan X" | ok ✅ |
 | what would it take to make the parser also handle tabs | `/plan-approach` | "what would it take to X" | ok ✅ |
 | what is the weather today | *silence* | — | ok ✅ |
@@ -134,6 +135,7 @@ sentences. This catches two prompts claiming the same words.
 | `/write-tests` | "write tests for X" | description | ok ✅ |
 | `/write-tests` | "write a test for X" | description | ok ✅ |
 | `/write-tests` | "write a unit test for X" | description | ok ✅ |
+| `/write-tests` | "write a X test for Y" | description | ok ✅ |
 | `/write-tests` | "add tests to X" | description | ok ✅ |
 | `/write-tests` | "add a test to X" | description | ok ✅ |
 | `/write-tests` | "add test coverage" | description | ok ✅ |
