@@ -64,7 +64,7 @@ MAX_DESCRIPTION = 1024
 # Repo convention: a body you cannot read in one screen wants to be a real
 # skill with reference files, not a shorthand.
 MAX_BODY_LINES = 60
-MAX_TRIGGER_LEN = 12
+MAX_TRIGGER_LEN = 15
 
 
 class Report:
@@ -174,7 +174,7 @@ def check_prompt(folder, report):
         report.warn(where, f"body is {len(body)} lines; convention is one screen (<= {MAX_BODY_LINES})")
 
     if len(trigger) > MAX_TRIGGER_LEN:
-        report.warn(trigger + "/", f"trigger is {len(trigger)} chars; short triggers are the point")
+        report.warn(trigger + "/", f"trigger is {len(trigger)} chars; keep it to two short words, it is typed by hand")
 
     return description
 

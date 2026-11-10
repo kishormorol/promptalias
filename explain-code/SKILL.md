@@ -1,5 +1,5 @@
 ---
-name: ex
+name: explain-code
 description: Explain how existing code works, without changing it. Use when the user wants to understand something — "explain X", "how does X work", "walk me through X", "what does this do", "why is X written this way", "help me understand X", "what's going on in X". Use it for any request to understand code rather than modify it.
 ---
 

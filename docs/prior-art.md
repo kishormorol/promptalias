@@ -133,7 +133,8 @@ doesn't.
 Build the compiler if any of these become true:
 
 - **Volume.** Past roughly twenty prompts, the folder-per-alias tax starts to bite, and a
-  terse-YAML compiler earns its keep. *Seven as of 17 Aug 2026 — `/n /u /t /d /rv /ex /p`.
+  terse-YAML compiler earns its keep. *Seven as of 17 Aug 2026 — `/build-new /update-feature /write-tests /debug-failure /review-diff /explain-code /plan-approach`
+  (named `/n /u /t /d /rv /ex /p` at the time; renamed 10 Nov 2026).
   Not close.*
 - **Divergence.** The three tools split again on `SKILL.md` frontmatter, restoring the
   translation problem that `npx skills` currently makes moot.

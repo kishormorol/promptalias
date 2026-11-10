@@ -1,5 +1,5 @@
 ---
-name: t
+name: write-tests
 description: Write tests for code that already works. Use when the user asks for tests — "write tests for X", "add test coverage", "test this", "cover X with tests", "what isn't covered", "unit tests for X", "does this have tests". Use it for any request to test existing behaviour rather than change it.
 model: claude-opus-5-5
 ---

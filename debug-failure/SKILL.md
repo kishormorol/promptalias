@@ -1,5 +1,5 @@
 ---
-name: d
+name: debug-failure
 description: Track a failure to its root cause and fix it. Use when something is broken — "this is failing", "why is X broken", "fix this error", "debug X", "X throws Y", "the tests are failing", "it stopped working", "I'm getting an error", "this crashes". Use it for any report of behaviour that is wrong, rather than a request for behaviour that is new.
 model: claude-opus-5-5
 ---

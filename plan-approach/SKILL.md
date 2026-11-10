@@ -1,5 +1,5 @@
 ---
-name: p
+name: plan-approach
 description: Plan an approach before any code is written. Use when the user asks how to approach something — "how should I X", "plan X", "what's the best way to Y", "design X", "think through X before coding", "give me an approach for X", "what would it take to X". Use it for any request that asks for a route rather than the work itself.
 model: claude-fable-5-2
 ---
