@@ -1,6 +1,6 @@
 ---
 name: write-tests
-description: Write tests for code that already works. Use when the user asks for tests — "write tests for X", "write a test for X", "write a unit test for X", "write a X test for Y", "add tests to X", "add a test to X", "add test coverage", "test this", "cover X with tests", "what isn't covered", "unit tests for X", "does this have tests". Use it for any request to test existing behaviour rather than change it.
+description: Write tests for code that already works. Use when the user asks for tests — "write tests for X", "write a test for X", "write a unit test for X", "write a regression test for X", "write an integration test for X", "add tests to X", "add a test to X", "add unit tests to X", "add a regression test to X", "add test coverage", "test this", "cover X with tests", "what isn't covered", "unit tests for X", "does this have tests". Use it for any request to test existing behaviour rather than change it.
 model: claude-sonnet-5-5
 ---
 
