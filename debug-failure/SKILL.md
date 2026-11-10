@@ -11,15 +11,16 @@ Debug this: $ARGUMENTS. If that is empty, work from the user's last message.
 ## How to work
 
 1. Reproduce it first. Run the failing command or test and read the actual output. A
-   fix for a failure you have not seen is a guess. If the command changes anything
-   outside the working tree (it deploys, migrates, deletes, sends or charges), do not
-   run it again: reproduce from the logs, a dry run or a copy, or ask.
+   fix for a failure you have not seen is a guess. If the command destroys or changes
+   anything beyond its own output (it deletes, deploys, migrates, sends or charges), do
+   not run it again: reproduce from the logs, a dry run or a copy, or ask.
 2. Read the whole error — stack frame, message, and the line it names — or, where
    there is no error, the exact wrong output. Then read the code that produced it.
 3. Form one hypothesis that explains *all* of the evidence, including anything that
    looks irrelevant. Check it before writing a fix: add a log line, run a narrower test,
-   inspect the state. If the user asked only why it is broken, stop here: report the
-   cause and the fix you would make, and apply it when they ask.
+   inspect the state. If the user asked only why it is broken, stop here: remove any
+   logging you added, report the cause and the fix you would make, and apply it when
+   they ask.
 4. Unless an existing test already fails on this bug, write a test that reproduces
    the failure and watch it fail. If no test can express
    it (a build, a config, an environment), say so and keep the failing output.
@@ -27,7 +28,10 @@ Debug this: $ARGUMENTS. If that is empty, work from the user's last message.
    hard-coding the reported input is not a fix. Handling a boundary the code should
    always have handled is. Never get to green by weakening, skipping or deleting a
    failing test; if the test itself is wrong, show why and change only that assertion.
-6. Run the new test, then the whole suite, and remove any logging you added.
+6. Run the new test, then the whole suite, and remove any logging you added. Where no
+   test expresses the failure, run the command from step 1 again and show its output
+   now; if that command must not be run again, say the fix is unverified against the
+   original failure and give the user the command.
 
 ## Rules
 
@@ -42,6 +46,7 @@ Debug this: $ARGUMENTS. If that is empty, work from the user's last message.
 ## Report back
 
 State the root cause in one sentence, the fix, the regression test, and the evidence:
-the failing output before, and the test command with its summary line after. Name any
+the failing output before, and after it the test command with its summary line, or
+the re-run command and its output. Name any
 test you changed and why. A fix applied without reproducing the failure is unverified,
 and the report says so.

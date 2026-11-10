@@ -233,7 +233,10 @@ Turn it on by copying the block in
 ```
 
 Add your own wording to `hooks/vocabulary.json`, which outranks anything lifted from a
-`description`. A lone capital stands for whatever you actually say:
+`description`. One rule comes before both: a phrasing that matches the opening words of the
+sentence beats one that matches further in, because the opening says what is being asked for
+("plan how to add retries to the uploader" is a request for a plan, although "add Y to X" is the
+longer match). A lone capital stands for whatever you actually say:
 
 ```json
 { "prompts": { "update-feature": ["make X also handle Y", "wire X up to Y"] } }

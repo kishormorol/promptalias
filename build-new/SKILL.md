@@ -43,4 +43,5 @@ Build this: $ARGUMENTS. If that is empty, build what the user's last message ask
 
 State what you built, where it lives, how to run it, and the exact test command with its
 summary line (passed, failed, skipped). If you could not run the tests, say so and why;
-do not call them passing. Name anything you deliberately left out.
+do not call them passing. Name any dependency you added and anything you deliberately
+left out.

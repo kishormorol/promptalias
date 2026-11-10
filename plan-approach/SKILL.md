@@ -23,7 +23,8 @@ Plan: $ARGUMENTS. If that is empty, plan what the user's last message asks for.
 
 ## Rules
 
-- Change no files: the plan goes in your reply. Write no implementation code in it.
+- Change no files: the plan goes in your reply, unless the user asked for it as a
+  document, and then that document is the only file you write. No implementation code.
   Signatures, file layout, and short sketches are fine; a finished function is not.
 - If the user also asked for the work itself ("design and build X"), give the plan
   first and ask whether to go ahead. Once they say yes, the rule above no longer
@@ -36,5 +37,6 @@ Plan: $ARGUMENTS. If that is empty, plan what the user's last message asks for.
 
 ## Report back
 
-The plan is the deliverable. Aim for one screen. Go longer only when the steps do not
-fit, never by dropping a step, a decision or a risk. End with the first step to take.
+The plan is the deliverable. Aim for one screen. If the steps do not fit, go longer;
+never fit the screen by dropping a step, a decision or a risk. End with the first step
+to take.
