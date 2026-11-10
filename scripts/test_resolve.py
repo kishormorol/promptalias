@@ -10,6 +10,7 @@ never fails loudly enough to cost you a turn.
 
 import json
 import subprocess
+import tempfile
 import sys
 import unittest
 from pathlib import Path
@@ -108,7 +109,14 @@ class HookContractTest(unittest.TestCase):
         return result.returncode, result.stdout
 
     def test_match_emits_useprompt_context(self):
-        code, out = self.run_hook(json.dumps({"prompt": "write tests for the resolver"}))
+        # The hook names only prompts linked as skills. A fresh checkout (CI) has none
+        # linked in ~/.claude/skills, so link one into a project of its own.
+        with tempfile.TemporaryDirectory() as project:
+            skills = Path(project) / ".claude" / "skills"
+            skills.mkdir(parents=True)
+            (skills / "write-tests").symlink_to(REPO / "write-tests")
+            code, out = self.run_hook(json.dumps({"prompt": "write tests for the resolver",
+                                                  "cwd": project}))
         self.assertEqual(code, 0)
         payload = json.loads(out)["hookSpecificOutput"]
         self.assertEqual(payload["hookEventName"], "UserPromptSubmit")
